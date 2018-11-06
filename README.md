@@ -1,7 +1,30 @@
 # Peer-To-Peer Web
 
+## Vision
+
+Developing a prototype for a p2p technology based instant messenger.
+In particular, this messenger incoorporates the means for at least a one-to-one text based communication.
+The project will be written in Java and have a GUI built with JavaFX.
+
+
 ## Goals
 
+These are our immediate goals:
+
+ * Develop a concept for p2p message exchange
+ * Implementation of aforementioned p2p message exchange concept
+ * Implement a text based, one-to-one prototype of the system
+ * Have a (basic) GUI
+ 
+Furthermore, we see additional, optional goals, including but not limiting to
+
+ * one-to-many communication
+ * many-to-many communication
+ * multimedia exchange (e.g. file sharing)
+ * ...
+
+
+## Project Description & Goals
 German original project description:
 
 * Ziel:
