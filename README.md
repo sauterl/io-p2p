@@ -18,7 +18,6 @@ German original project description:
 ## Contributors
 
  * Cristina Illi
- * Christoph Rohrer
  * Loris Sauter
 
 <name.lastname@unibas.ch>
