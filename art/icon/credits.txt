@@ -1,0 +1,10 @@
+# Credits of icons (flaticon.com)
+
+ * Email Icon:
+    File: email.svg
+    Source: https://www.flaticon.com/free-icon/email_561127#term=message&page=1&position=18
+    
+ * Paper Plane / Message Icon:
+    File: paper-plane.svg
+    Source: https://www.flaticon.com/free-icon/paper-plane_126475#term=message&page=1&position=29
+    
