@@ -1,7 +1,7 @@
 package com.github.sauterl.iop2p;
 
-import com.github.sauterl.iop2p.data.Reciever;
-import com.github.sauterl.iop2p.data.Sender;
+import com.github.sauterl.iop2p.io.Receiver;
+import com.github.sauterl.iop2p.io.Sender;
 import io.ipfs.api.IPFS;
 import java.util.Scanner;
 
@@ -9,13 +9,13 @@ public class Main {
   private String username;
   private IPFS ipfs;
   private Sender s;
-  private Reciever r;
+  private Receiver r;
 
   public Main(String username, String node) {
     this.username = username;
     ipfs = new IPFS(node);
-    s = new Sender(ipfs);
-    r = new Reciever(getTopic(), ipfs);
+    s = new Sender(ipfs.pubsub);
+    r = new Receiver(username, ipfs.pubsub);
   }
 
   public void run() throws Exception {

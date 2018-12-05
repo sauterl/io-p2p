@@ -1,29 +1,33 @@
-package com.github.sauterl.iop2p.data;
+package com.github.sauterl.iop2p.io;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.sauterl.iop2p.data.Message;
 import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
 import com.sun.org.apache.xml.internal.security.utils.Base64;
 import io.ipfs.api.IPFS;
+import io.ipfs.api.IPFS.Pubsub;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
 
-public class Reciever implements Runnable {
+public class Receiver implements Runnable {
 
   private String topic;
-  private IPFS ipfs;
+  private Pubsub pubsub;
   private ObjectMapper om = new ObjectMapper();
-  private List<Message> messages = new ArrayList<>();
+  private BlockingQueue<Message> messages = new ArrayBlockingQueue<>(1000);
 
-  public Reciever(String topic, IPFS ipfs) {
+  public Receiver(String topic, Pubsub pubsub) {
     this.topic = topic;
-    this.ipfs = ipfs;
+    this.pubsub = pubsub;
   }
 
   @Override
   public void run() {
     try {
-      ipfs.pubsub
+      pubsub
           .sub(topic)
           .forEach(
               msg -> {
@@ -32,9 +36,7 @@ public class Reciever implements Runnable {
                   Message actual = parse(rawMsg);
                   System.out.println(actual.getPayload());
                   messages.add(actual);
-                } catch (Base64DecodingException e) {
-                  e.printStackTrace();
-                } catch (IOException e) {
+                } catch (Base64DecodingException | IOException e) {
                   e.printStackTrace();
                 }
               });
@@ -43,11 +45,15 @@ public class Reciever implements Runnable {
     }
   }
 
-  public String parseRaw(String data) throws Base64DecodingException {
+  private String parseRaw(String data) throws Base64DecodingException {
     return new String(Base64.decode(data));
   }
 
-  public Message parse(String msg) throws IOException {
+  private Message parse(String msg) throws IOException {
     return om.readValue(msg, Message.class);
+  }
+
+  public Message getNextMessage() throws InterruptedException {
+    return messages.take();
   }
 }
