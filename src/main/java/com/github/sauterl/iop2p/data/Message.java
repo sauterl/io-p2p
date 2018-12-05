@@ -2,6 +2,8 @@ package com.github.sauterl.iop2p.data;
 
 public class Message {
 
+  public Message() {}
+
   public Message(String msg) {
     this.payload = msg;
   }
