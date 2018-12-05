@@ -28,6 +28,7 @@ dependencies {
     implementation 'com.github.ipfs:java-ipfs-api:v1.2.2'
     implementation group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.3'
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.9.3'
+    implementation group: 'com.github.rvesse', name: 'airline', version: '2.2.0'
 
     testImplementation group: 'junit', name: 'junit', version: '4.12'
 }

@@ -20,7 +20,7 @@ public class Experiments {
           .forEach(
               e -> {
                 System.out.println(e);
-                String a = (String) e.get("com/github/sauterl/iop2p/data");
+                String a = (String) e.get("data");
                 try {
                   System.out.println("Data: " + new String(Base64.decode(a)));
                 } catch (Base64DecodingException e1) {
