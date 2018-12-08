@@ -1,14 +1,11 @@
-package com.github.sauterl.iop2p.io;
+package com.github.sauterl.iop2p.net;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.sauterl.iop2p.data.Message;
 import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
 import com.sun.org.apache.xml.internal.security.utils.Base64;
-import io.ipfs.api.IPFS;
 import io.ipfs.api.IPFS.Pubsub;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 

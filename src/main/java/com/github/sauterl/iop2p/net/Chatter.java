@@ -1,4 +1,4 @@
-package com.github.sauterl.iop2p.io;
+package com.github.sauterl.iop2p.net;
 
 import com.github.sauterl.iop2p.Utils;
 import com.github.sauterl.iop2p.data.Message;

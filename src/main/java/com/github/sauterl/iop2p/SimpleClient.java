@@ -1,7 +1,7 @@
 package com.github.sauterl.iop2p;
 
 import com.github.sauterl.iop2p.data.Message;
-import com.github.sauterl.iop2p.io.Chatter;
+import com.github.sauterl.iop2p.net.Chatter;
 import io.ipfs.api.IPFS;
 import java.text.SimpleDateFormat;
 import java.util.Date;

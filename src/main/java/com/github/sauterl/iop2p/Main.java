@@ -1,7 +1,7 @@
 package com.github.sauterl.iop2p;
 
-import com.github.sauterl.iop2p.io.Receiver;
-import com.github.sauterl.iop2p.io.Sender;
+import com.github.sauterl.iop2p.net.Receiver;
+import com.github.sauterl.iop2p.net.Sender;
 import io.ipfs.api.IPFS;
 import java.util.Scanner;
 
