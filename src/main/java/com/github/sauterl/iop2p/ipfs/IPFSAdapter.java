@@ -2,9 +2,15 @@ package com.github.sauterl.iop2p.ipfs;
 
 import io.ipfs.api.IPFS;
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.function.Consumer;
+import org.apache.commons.exec.CommandLine;
+import org.apache.commons.exec.DefaultExecuteResultHandler;
+import org.apache.commons.exec.DefaultExecutor;
+import org.apache.commons.exec.LogOutputStream;
+import org.apache.commons.exec.PumpStreamHandler;
 
 /**
  * Wraps the java ipfs instance with it's deamon.
@@ -44,6 +50,8 @@ public class IPFSAdapter {
    * Expects that ipfs was previously initialized with the command-line call of {@code ipfs init}.
    */
   public IPFSAdapter(){
+
+
     processBuilder = new ProcessBuilder(IPFS_DAEMON_COMMAND, ENABLE_PUBSUB_FLAG);
     processBuilder.redirectErrorStream(true);
   }
@@ -98,6 +106,40 @@ public class IPFSAdapter {
     }
   }
 
+
+  public static IPFS startDaemonAndCreate(){
+    CommandLine commandLine = new CommandLine(IPFS_DAEMON_COMMAND);
+    commandLine.addArgument(ENABLE_PUBSUB_FLAG);
+    DefaultExecutor executor = new DefaultExecutor();
+    DefaultExecuteResultHandler resultHandler = new DefaultExecuteResultHandler();
+
+    PumpStreamHandler pumpStreamHandler = new PumpStreamHandler(new LogOutputStream(){
+
+
+
+      @Override
+      protected void processLine(String line, int logLevel) {
+        System.out.println("[IPFS DAEMON] "+line);
+      }
+    });
+
+    executor.setStreamHandler(pumpStreamHandler);
+    try {
+      executor.execute(commandLine,resultHandler);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+
+    try {
+      Thread.sleep(60 * 1000);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+    String multiaddr;
+
+    return null;
+  }
 
 
 }

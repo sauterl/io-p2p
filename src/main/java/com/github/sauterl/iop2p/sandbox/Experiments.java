@@ -11,7 +11,6 @@ import java.io.IOException;
 public class Experiments {
 
   public static void main(String[] args) throws IOException {
-    IPFSAdapter adapter = new IPFSAdapter();
-    adapter.start();
+    IPFSAdapter.startDaemonAndCreate();
   }
 }
