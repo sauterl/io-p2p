@@ -21,8 +21,8 @@ public class Chatter {
     receiverThred = new Thread(receiver);
   }
 
-  public void send(String username, String msg) throws Exception {
-    sender.send(username, msg);
+  public Message send(String username, String msg) throws Exception {
+    return sender.send(username, msg);
   }
 
   public void stop(){

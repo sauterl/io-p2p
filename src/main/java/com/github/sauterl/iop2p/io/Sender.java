@@ -16,8 +16,10 @@ public class Sender {
   }
 
 
-  public void send(String username, String msg) throws Exception {
+  public Message send(String username, String msg) throws Exception {
     Message message = new Message(msg);
     pubsub.pub("/iop2pchat/inbox/" + username, om.writeValueAsString(message));
+
+    return message;
   }
 }

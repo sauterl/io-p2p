@@ -1,11 +1,10 @@
 package com.github.sauterl.iop2p.ui;
 
+import com.github.sauterl.iop2p.data.Message;
+import com.github.sauterl.iop2p.io.Chatter;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
@@ -16,19 +15,22 @@ import javafx.stage.Stage;
 
 public class ChatWindow extends Application {
 
+  VBox upperVBox;
+
   public static void main(String[] args) {
     launch(args);
   }
 
   @Override
   public void start(Stage primaryStage) {
+    Chatter chatter = new Chatter(null, null);
     VBox root = new VBox();
     BorderPane border = new BorderPane();
     Scene scene = new Scene(root, 300, 250);
     primaryStage.setScene(scene);
 
     // upper VBox
-    VBox upperVBox = new VBox();
+    upperVBox = new VBox();
     border.setCenter(upperVBox);
     upperVBox.setPrefSize(300, 220);
     // scroll pane for all the sent & received messages
@@ -62,9 +64,18 @@ public class ChatWindow extends Application {
     b.setDefaultButton(true);
     b.setOnAction(
         event -> {
-          String message = firstTF.getText();
-          upperVBox.getChildren().add(new Label(message));
+          String username = firstTF.getText();
+          String message = secondTF.getText();
+          try {
+            Message m = chatter.send(username, message);
+            displayMessage(m);
+          } catch (Exception e) {
+            e.printStackTrace();
+          }
         });
+  }
+
+  public void displayMessage(Message message) {
 
   }
 }
