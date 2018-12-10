@@ -2,13 +2,15 @@ package com.github.sauterl.iop2p.ui;
 
 import com.github.sauterl.iop2p.data.Message;
 import com.github.sauterl.iop2p.net.Chatter;
-import io.ipfs.api.IPFS;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
@@ -19,7 +21,6 @@ import javafx.stage.Stage;
 
 public class ChatWindow extends Application {
   // TODO Cleanup: Separate UI and logice more
-
 
   private VBox upperVBox;
   private ObservableList<Message> messages = FXCollections.observableArrayList();
@@ -88,14 +89,41 @@ public class ChatWindow extends Application {
           String message = secondTF.getText();
           try {
             Message m = chatter.send(username, message);
-            displayMessage(m);
+            displayMessage(m, false);
           } catch (Exception e) {
             e.printStackTrace();
           }
         });
   }
 
-  public void displayMessage(Message message) {
+  private void displayMessage(Message message, boolean self) {
+    // extract timestamp
+    StringBuilder stringBuilder = new StringBuilder();
+    String pattern = "dd-MM-yyyy HH:mm:ssZ";
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+    String time = simpleDateFormat.format(new Date(message.getTimestamp()));
 
+    // extract username
+    String username = message.getSourceUsername();
+    if (self) {
+      String you = " (you)";
+      username = username + you;
+    }
+
+    // extract message
+    String messageText = message.getPayload();
+    stringBuilder.append("[").append(time).append("]");
+
+    // fill StringBuilder
+    stringBuilder
+        .append("[")
+        .append(time)
+        .append("]")
+        .append(": ")
+        .append(username)
+        .append(": ")
+        .append(messageText);
+
+    upperVBox.getChildren().add(new Label(stringBuilder.toString()));
   }
 }
