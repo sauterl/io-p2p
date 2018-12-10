@@ -16,6 +16,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -35,6 +36,8 @@ public class ChatWindow extends Application {
   public void start(Stage primaryStage) {
     // TODO Refactor: use airline for cli-arg parsing
     // TODO: Cleanup of threading
+
+
     Chatter chatter = new Chatter(getParameters().getRaw().get(1), new IPFS(getParameters().getRaw().get(0)).pubsub);
     chatter.setOnMessageReceived(m -> Platform.runLater(() -> messages.add(m)));
     messages.addListener((ListChangeListener<Message>) c -> {
@@ -89,6 +92,8 @@ public class ChatWindow extends Application {
     lowerHBox.getChildren().add(secondTF);
     lowerHBox.getChildren().add(b);
     root.getChildren().add(lowerHBox);
+
+    primaryStage.getIcons().addAll(new Image(ChatWindow.class.getClassLoader().getResourceAsStream("icon.png")) );
 
     primaryStage.show();
     b.setDefaultButton(true);
