@@ -29,6 +29,10 @@ public class Chatter {
     receiverThred.interrupt();
   }
 
+  public void start(){
+    receiverThred.start();
+  }
+
   /**
    * Should be blocking
    * @return
