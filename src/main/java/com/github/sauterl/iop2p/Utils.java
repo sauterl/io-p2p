@@ -12,7 +12,7 @@ public class Utils {
   }
 
   public static String getUsernameInboxTopic(String username){
-    return "/iop2pchat/inbox/username"+username;
+    return "/iop2pchat/inbox/"+username;
   }
 
 }

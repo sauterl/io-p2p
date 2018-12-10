@@ -17,6 +17,7 @@ public class Receiver implements Runnable {
   private BlockingQueue<Message> messages = new ArrayBlockingQueue<>(1000);
 
   public Receiver(String topic, Pubsub pubsub) {
+    System.out.println("Receiving at "+topic);
     this.topic = topic;
     this.pubsub = pubsub;
   }

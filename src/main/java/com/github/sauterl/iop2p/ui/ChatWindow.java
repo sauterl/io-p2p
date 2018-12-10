@@ -1,8 +1,12 @@
 package com.github.sauterl.iop2p.ui;
 
 import com.github.sauterl.iop2p.data.Message;
-import com.github.sauterl.iop2p.io.Chatter;
+import com.github.sauterl.iop2p.net.Chatter;
+import io.ipfs.api.IPFS;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
@@ -14,8 +18,11 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class ChatWindow extends Application {
+  // TODO Cleanup: Separate UI and logice more
 
-  VBox upperVBox;
+
+  private VBox upperVBox;
+  private ObservableList<Message> messages = FXCollections.observableArrayList();
 
   public static void main(String[] args) {
     launch(args);
@@ -23,7 +30,20 @@ public class ChatWindow extends Application {
 
   @Override
   public void start(Stage primaryStage) {
-    Chatter chatter = new Chatter(null, null);
+    // TODO Refactor: use airline for cli-arg parsing
+    Chatter chatter = new Chatter(getParameters().getRaw().get(1), new IPFS(getParameters().getRaw().get(0)).pubsub);
+    chatter.setOnMessageReceived(m -> messages.add(m));
+    messages.addListener((ListChangeListener<Message>) c -> {
+      if(c.wasAdded()){
+        displayMessage(c.getAddedSubList().get(0)); // should only be a single added message
+      }else{
+        System.out.println("Received something strange: "+c);
+      }
+    });
+    chatter.start();
+    primaryStage.setOnCloseRequest(e -> {
+      chatter.stop(); // not sure if this works
+    });
     VBox root = new VBox();
     BorderPane border = new BorderPane();
     Scene scene = new Scene(root, 300, 250);
