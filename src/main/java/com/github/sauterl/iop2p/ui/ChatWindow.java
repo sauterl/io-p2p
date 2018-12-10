@@ -2,6 +2,7 @@ package com.github.sauterl.iop2p.ui;
 
 import com.github.sauterl.iop2p.data.Message;
 import com.github.sauterl.iop2p.net.Chatter;
+import io.ipfs.api.IPFS;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javafx.application.Application;
@@ -36,7 +37,7 @@ public class ChatWindow extends Application {
     chatter.setOnMessageReceived(m -> messages.add(m));
     messages.addListener((ListChangeListener<Message>) c -> {
       if(c.wasAdded()){
-        displayMessage(c.getAddedSubList().get(0)); // should only be a single added message
+        displayMessage(c.getAddedSubList().get(0), false); // should only be a single added message
       }else{
         System.out.println("Received something strange: "+c);
       }
@@ -89,7 +90,7 @@ public class ChatWindow extends Application {
           String message = secondTF.getText();
           try {
             Message m = chatter.send(username, message);
-            displayMessage(m, false);
+            displayMessage(m, true);
           } catch (Exception e) {
             e.printStackTrace();
           }
