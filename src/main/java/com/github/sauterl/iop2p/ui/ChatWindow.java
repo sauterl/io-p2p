@@ -48,9 +48,10 @@ public class ChatWindow extends Application {
       }
     });
     chatter.start();
-    primaryStage.setOnCloseRequest(e -> {
-      chatter.stop(); // not sure if this works
-    });
+    primaryStage.setOnCloseRequest(
+        e -> {
+          chatter.stop(); // not sure if this works
+        });
     VBox root = new VBox();
     BorderPane border = new BorderPane();
     Scene scene = new Scene(root, 300, 250);
@@ -75,8 +76,10 @@ public class ChatWindow extends Application {
     border.setBottom(lowerHBox);
     // TextField to enter name of reciever
     TextField firstTF = new TextField();
+    firstTF.setPromptText("Target username");
     // TextField to enter message
     TextField secondTF = new TextField();
+    secondTF.setPromptText("Enter your message here");
 
     // SEND button
     Button b = new Button("SEND");
@@ -96,6 +99,9 @@ public class ChatWindow extends Application {
           try {
             Message m = chatter.send(username, message);
             displayMessage(m, true);
+            firstTF.clear();
+            secondTF.clear();
+
           } catch (Exception e) {
             e.printStackTrace();
           }
@@ -105,31 +111,34 @@ public class ChatWindow extends Application {
   private void displayMessage(Message message, boolean self) {
     // extract timestamp
     StringBuilder stringBuilder = new StringBuilder();
-    String pattern = "dd-MM-yyyy HH:mm:ssZ";
+    String pattern = "HH:mm";
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
     String time = simpleDateFormat.format(new Date(message.getTimestamp()));
 
     // extract username
-    String username = message.getSourceUsername();
+    String usernameFrom = message.getSourceUsername();
+    String usernameTo = message.getTargetUsername();
     if (self) {
       String you = " (you)";
-      username = username + you;
+      usernameFrom = usernameFrom + you;
     }
 
     // extract message
     String messageText = message.getPayload();
-    stringBuilder.append("[").append(time).append("]");
-
     // fill StringBuilder
     stringBuilder
         .append("[")
         .append(time)
         .append("]")
         .append(": ")
-        .append(username)
+        .append(usernameFrom)
+        .append(" to ")
+        .append(usernameTo)
         .append(": ")
         .append(messageText);
 
-    upperVBox.getChildren().add(new Label(stringBuilder.toString()));
+    Label label = new Label(stringBuilder.toString());
+    label.setWrapText(true);
+    upperVBox.getChildren().add(label);
   }
 }

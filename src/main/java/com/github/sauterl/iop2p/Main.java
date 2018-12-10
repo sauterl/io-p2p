@@ -32,7 +32,7 @@ public class Main {
       }
       else{
         String[] parts = line.split(":");
-        this.s.send(parts[0], parts[1]);
+      //  this.s.send(parts[0], parts[1]);
       }
     }
   }

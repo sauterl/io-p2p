@@ -9,16 +9,11 @@ public class Sender {
   private ObjectMapper om = new ObjectMapper();
   private Pubsub pubsub;
 
-
   public Sender(Pubsub pubsub) {
     this.pubsub = pubsub;
   }
 
-
-  public Message send(String username, String msg) throws Exception {
-    Message message = new Message(msg);
-    pubsub.pub("/iop2pchat/inbox/" + username, om.writeValueAsString(message));
-
-    return message;
+  public void send(Message message) throws Exception {
+    pubsub.pub("/iop2pchat/inbox/" + message.getTargetUsername(), om.writeValueAsString(message));
   }
 }
