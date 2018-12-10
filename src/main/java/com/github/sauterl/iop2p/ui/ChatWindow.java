@@ -6,6 +6,7 @@ import io.ipfs.api.IPFS;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -33,9 +34,13 @@ public class ChatWindow extends Application {
   @Override
   public void start(Stage primaryStage) {
     // TODO Refactor: use airline for cli-arg parsing
+    // TODO: Cleanup of threading
     Chatter chatter = new Chatter(getParameters().getRaw().get(1), new IPFS(getParameters().getRaw().get(0)).pubsub);
-    chatter.setOnMessageReceived(m -> messages.add(m));
+    chatter.setOnMessageReceived(m -> Platform.runLater(() -> messages.add(m)));
     messages.addListener((ListChangeListener<Message>) c -> {
+      if(!c.next() ){
+        return;
+      }
       if(c.wasAdded()){
         displayMessage(c.getAddedSubList().get(0), false); // should only be a single added message
       }else{
