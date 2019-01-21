@@ -1,18 +1,11 @@
 package com.github.sauterl.iop2p.sandbox;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
 import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -21,11 +14,6 @@ import org.bouncycastle.crypto.AsymmetricBlockCipher;
 import org.bouncycastle.crypto.engines.RSAEngine;
 import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 import org.bouncycastle.crypto.util.PrivateKeyFactory;
-import org.bouncycastle.jce.provider.PEMUtil;
-import org.bouncycastle.openssl.PEMKeyPair;
-import org.bouncycastle.openssl.PEMParser;
-import org.bouncycastle.util.io.pem.PemObjectParser;
-import sun.misc.BASE64Decoder;
 
 /**
  * TODO: write JavaDoc
@@ -67,7 +55,7 @@ public class Experiments {
     /*try {
       //IPFSAdapter.create("C:/Users/loris/uni/11_hs18/internet-overloards/go-ipfs/ipfs.exe");
       IPFSAdapter ipfsAdapter = IPFSAdapter.create("C:/Users/loris/uni/11_hs18/internet-overloards/go-ipfs/ipfs.exe", "./ipfs-repo");
-      ipfsAdapter.get().pubsub.pub("asdf", "asdf");
+      ipfsAdapter.ipfs().pubsub.pub("asdf", "asdf");
       System.out.println("ffff");
       ipfsAdapter.close();
       System.exit(0);

@@ -2,21 +2,15 @@ package com.github.sauterl.iop2p.crypto;
 
 import com.github.rvesse.airline.annotations.Command;
 import com.github.rvesse.airline.annotations.Option;
+import com.github.rvesse.airline.annotations.restrictions.Required;
 import com.github.sauterl.iop2p.Utils;
-import io.ipfs.multibase.Multibase.Base;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.nio.file.Paths;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.Security;
-import java.util.Arrays;
 import java.util.Base64;
-import javax.rmi.CORBA.Util;
 
 /**
  * TODO: write JavaDoc
@@ -30,6 +24,7 @@ public class KeyGen implements Runnable{
   public static final String PUBLIC_KEY = "public-key";
   public static final String PRIVATE_KEY = "private-key";
 
+  @Required
   @Option(name={"-o", "--output"}, description = "Path to write the key files to")
   private String outputPath;
 

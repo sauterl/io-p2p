@@ -1,20 +1,28 @@
 package com.github.sauterl.iop2p.net;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.sauterl.iop2p.data.Message;
 import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
 import com.sun.org.apache.xml.internal.security.utils.Base64;
 import io.ipfs.api.IPFS.Pubsub;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
 public class Receiver implements Runnable {
 
+  // TODO Loggerize
+
   private String topic;
   private Pubsub pubsub;
   private ObjectMapper om = new ObjectMapper();
   private BlockingQueue<Message> messages = new ArrayBlockingQueue<>(1000);
+
+
+
 
   public Receiver(String topic, Pubsub pubsub) {
     System.out.println("Receiving at "+topic);
@@ -31,9 +39,14 @@ public class Receiver implements Runnable {
               msg -> {
                 try {
                   String rawMsg = parseRaw((String) msg.get("data"));
-                  Message actual = parse(rawMsg);
-                  System.out.println(actual.getPayload());
-                  messages.add(actual);
+                  Optional<Message> prsdMsg = parse(rawMsg);
+                  if(prsdMsg.isPresent()){
+                    Message actual = prsdMsg.get();
+                    System.out.println(actual.getPayload());
+                    messages.add(actual);
+                  }else{
+                    System.out.println("Coudln't handle: "+rawMsg);
+                  }
                 } catch (Base64DecodingException | IOException e) {
                   e.printStackTrace();
                 }
@@ -47,8 +60,13 @@ public class Receiver implements Runnable {
     return new String(Base64.decode(data));
   }
 
-  private Message parse(String msg) throws IOException {
-    return om.readValue(msg, Message.class);
+  private Optional<Message> parse(String msg) throws IOException {
+    try{
+      Message m = om.readValue(msg, Message.class);
+      return Optional.of(m);
+    }catch(JsonMappingException | JsonParseException e){
+      return Optional.empty();
+    }
   }
 
   public Message getNextMessage() throws InterruptedException {

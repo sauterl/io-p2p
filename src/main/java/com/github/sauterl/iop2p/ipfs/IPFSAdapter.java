@@ -9,6 +9,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeoutException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.listener.ProcessDestroyer;
@@ -22,7 +24,9 @@ import org.zeroturnaround.exec.listener.ShutdownHookProcessDestroyer;
  */
 public class IPFSAdapter {
 
+  // TODO Cleanup
 
+  private final static Logger LOGGER = LoggerFactory.getLogger(IPFSAdapter.class);
   /*
   Notes:
   This class shall
@@ -54,19 +58,17 @@ public class IPFSAdapter {
     Callable<IPFS> callable = () -> {
       while (daemon.getApiAddress() == null) {
         Thread.sleep(1000);
-        System.out.println("Addr: " + daemon.getApiAddress());
       }
       return new IPFS(daemon.getApiAddress());
     };
     futureTask = new FutureTask<>(callable);
     ExecutorService executorService = Executors.newFixedThreadPool(4);
     executorService.execute(futureTask);
+    LOGGER.trace("Created IPFS Adapter");
   }
 
-  public static IPFSAdapter create(String ipfsExecPath, String ipfsRepo)
-      throws ExecutionException, InterruptedException {
-    IPFSAdapter adapter = new IPFSAdapter(ipfsExecPath, ipfsRepo);
-    return adapter;
+  public static IPFSAdapter create(String ipfsExecPath, String ipfsRepo) {
+    return new IPFSAdapter(ipfsExecPath, ipfsRepo);
   }
 
   public void close() {
@@ -75,7 +77,7 @@ public class IPFSAdapter {
     futureTask.cancel(true);
   }
 
-  public IPFS get() throws ExecutionException, InterruptedException {
+  public IPFS ipfs() throws ExecutionException, InterruptedException {
     return futureTask.get();
   }
 
@@ -163,7 +165,7 @@ public class IPFSAdapter {
           new org.zeroturnaround.exec.stream.LogOutputStream() {
             @Override
             protected void processLine(String line) {
-              System.out.println("[DEAMON] " + line);
+              LOGGER.debug("Daemon: {}", line);
               if (line.contains("Error: no IPFS repo found")) {
                 success[0] = false;
               }
@@ -186,7 +188,7 @@ public class IPFSAdapter {
               new org.zeroturnaround.exec.stream.LogOutputStream() {
                 @Override
                 protected void processLine(String line) {
-                  System.out.println("[INIT] " + line);
+                  LOGGER.debug("Init: {}", line);
                 }
               }).environment(IPFS_ENVIRONMENT_VARIABLE, repo).execute();
       if (result.getExitValue() == 0) {

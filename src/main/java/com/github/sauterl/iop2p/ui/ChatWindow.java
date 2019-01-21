@@ -2,7 +2,6 @@ package com.github.sauterl.iop2p.ui;
 
 import com.github.sauterl.iop2p.data.Message;
 import com.github.sauterl.iop2p.net.Chatter;
-import io.ipfs.api.IPFS;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import javafx.application.Application;
@@ -38,7 +37,7 @@ public class ChatWindow extends Application {
     // TODO: Cleanup of threading
 
 
-    Chatter chatter = new Chatter(getParameters().getRaw().get(1), new IPFS(getParameters().getRaw().get(0)).pubsub);
+    Chatter chatter = new Chatter(SimpleGuiCommand.getInstance().getUsername(), SimpleGuiCommand.getInstance().getIpfs().pubsub);
     chatter.setOnMessageReceived(m -> Platform.runLater(() -> messages.add(m)));
     messages.addListener((ListChangeListener<Message>) c -> {
       if(!c.next() ){
@@ -145,5 +144,11 @@ public class ChatWindow extends Application {
     Label label = new Label(stringBuilder.toString());
     label.setWrapText(true);
     upperVBox.getChildren().add(label);
+  }
+
+  @Override
+  public void stop() throws Exception {
+    super.stop();
+    System.exit(0); // Cause IPFS daemon sub-process to halt
   }
 }
