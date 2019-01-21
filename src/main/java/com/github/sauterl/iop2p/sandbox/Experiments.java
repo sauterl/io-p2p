@@ -1,9 +1,31 @@
 package com.github.sauterl.iop2p.sandbox;
 
-import com.github.sauterl.iop2p.ipfs.IPFSAdapter;
-import io.ipfs.api.IPFS;
+import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
+import java.io.FileReader;
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
+import java.io.ObjectOutputStream;
+import java.security.KeyFactory;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.Security;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.bouncycastle.crypto.AsymmetricBlockCipher;
+import org.bouncycastle.crypto.engines.RSAEngine;
+import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
+import org.bouncycastle.crypto.util.PrivateKeyFactory;
+import org.bouncycastle.jce.provider.PEMUtil;
+import org.bouncycastle.openssl.PEMKeyPair;
+import org.bouncycastle.openssl.PEMParser;
+import org.bouncycastle.util.io.pem.PemObjectParser;
+import sun.misc.BASE64Decoder;
 
 /**
  * TODO: write JavaDoc
@@ -12,8 +34,37 @@ import java.util.concurrent.ExecutionException;
  */
 public class Experiments {
 
-  public static void main(String[] args) throws IOException {
-    try {
+  public static void main(String[] args)
+      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+
+    String privateKeyPath = "C:/Users/Loris/.babun/cygwin/home/Loris/.ssh/awsunibas";
+    Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+
+    FileReader fr = new FileReader(privateKeyPath);
+    BufferedReader br = new BufferedReader(fr);
+    StringBuilder sb = new StringBuilder();
+    List<String> l = br.lines().collect(Collectors.toCollection(ArrayList::new));
+    l.remove(0);
+    l.remove(l.size()-1);
+    l.forEach(sb::append);
+
+
+    String key = sb.toString();
+
+
+    Base64.Decoder dec = Base64.getDecoder();
+    AsymmetricKeyParameter privateKey =
+        PrivateKeyFactory.createKey(dec.decode(key));
+
+
+    AsymmetricBlockCipher e = new RSAEngine();
+    e = new org.bouncycastle.crypto.encodings.PKCS1Encoding(e);
+    e.init(false, privateKey);
+
+    System.out.println("asdf");
+
+
+    /*try {
       //IPFSAdapter.create("C:/Users/loris/uni/11_hs18/internet-overloards/go-ipfs/ipfs.exe");
       IPFSAdapter ipfsAdapter = IPFSAdapter.create("C:/Users/loris/uni/11_hs18/internet-overloards/go-ipfs/ipfs.exe", "./ipfs-repo");
       ipfsAdapter.get().pubsub.pub("asdf", "asdf");
@@ -26,6 +77,6 @@ public class Experiments {
       e.printStackTrace();
     } catch (Exception e) {
       e.printStackTrace();
-    }
+    }*/
   }
 }

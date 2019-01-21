@@ -42,6 +42,7 @@ dependencies {
 
     // Security
     implementation group: 'org.bouncycastle', name: 'bcprov-jdk15on', version: '1.60'
+    implementation group: 'org.bouncycastle', name: 'bcpkix-jdk15on', version: '1.60'
 
 
     // Testing
