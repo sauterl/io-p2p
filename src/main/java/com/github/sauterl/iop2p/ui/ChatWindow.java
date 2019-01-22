@@ -1,16 +1,13 @@
 package com.github.sauterl.iop2p.ui;
 
 import com.github.sauterl.iop2p.net.Chatter;
+import java.io.IOException;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class ChatWindow extends Application {
-
-  public static void main(String[] args) {
-    launch(args);
-  }
 
   @Override
   public void start(Stage primaryStage) {
@@ -34,7 +31,13 @@ public class ChatWindow extends Application {
     primaryStage.setOnCloseRequest(
         e -> {
           chatter.stop(); // not sure if this works
+          try {
+            cp.saveHistory();
+          } catch (IOException e1) {
+            e1.printStackTrace();
+          }
         });
+
   }
 
   @Override

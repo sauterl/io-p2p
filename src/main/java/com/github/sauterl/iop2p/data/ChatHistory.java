@@ -28,6 +28,10 @@ public class ChatHistory {
     this.messages = messages;
   }
 
+  public ChatHistory(String partner) {
+    user = partner;
+  }
+
   public String getUser() {
     return user;
   }
