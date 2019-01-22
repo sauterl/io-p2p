@@ -8,6 +8,7 @@ import com.github.sauterl.iop2p.net.Chatter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -15,15 +16,11 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.geometry.HorizontalDirection;
-import javafx.geometry.Orientation;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextField;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
@@ -34,20 +31,24 @@ public class ChatPanel extends VBox {
   private static final Logger LOGGER = LoggerFactory.getLogger(ChatPanel.class);
 
   private VBox upperVBox;
-  private final ObservableList<Message> messages;
+  private ObservableList<Message> messages = null;
   private ChatHistory chatHistory;
   private String partner;
+  private final Button sendBtn;
+  private final TextField msgInputTF;
+  private Chatter chatter;
 
-  public ChatPanel(Chatter chatter, String partner) {
-    this.partner = partner;
-    LOGGER.debug("Savefile: {}", getSaveFile());
-    chatHistory = loadOrCreateHistory();
-    messages = FXCollections.observableList(chatHistory.getMessages());
+  public ChatPanel(Chatter chatter) {
+    this.partner = null;
+    this.chatter = chatter;
 
-    //setMinHeight(50);
-    //setMinWidth(100);
+    //chatHistory = loadOrCreateHistory();
+    //
 
-    //BorderPane border = new BorderPane();
+    // setMinHeight(50);
+    // setMinWidth(100);
+
+    // BorderPane border = new BorderPane();
 
     // upper VBox
     upperVBox = new VBox();
@@ -66,28 +67,45 @@ public class ChatPanel extends VBox {
     // lower VBox
     HBox lowerHBox = new HBox();
     // TextField to enter message
-    TextField secondTF = new TextField();
-    secondTF.setPromptText("Enter your message here");
+    msgInputTF = new TextField();
+    msgInputTF.setPromptText("Enter your message here");
 
     // SEND button
-    Button b = new Button("SEND");
+    sendBtn = new Button("SEND");
 
     // add in VBox that contains all the elements
     // lowerHBox.getChildren().add(firstTF);
-    HBox.setHgrow(secondTF, Priority.ALWAYS);
-    lowerHBox.getChildren().add(secondTF);
-    lowerHBox.getChildren().add(b);
+    HBox.setHgrow(msgInputTF, Priority.ALWAYS);
+    lowerHBox.getChildren().add(msgInputTF);
+    lowerHBox.getChildren().add(sendBtn);
     getChildren().add(lowerHBox);
 
     lowerHBox.prefWidthProperty().bind(widthProperty());
-    b.setDefaultButton(true);
-    b.setOnAction(
+    sendBtn.setDefaultButton(true);
+
+    // add in VBox that contains all the elements
+    // this.getChildren().addAll(scrollPane, lowerHBox);
+    //displayChatHistory();
+  }
+
+  private void displayChatHistory() {
+    chatHistory
+        .getMessages()
+        .forEach(
+            m -> {
+              displayMessage(m, m.getTargetUsername().equals(chatHistory.getUser()));
+            });
+  }
+
+  private void initMessageHandling(){
+    messages = FXCollections.observableList(chatHistory.getMessages());
+    sendBtn.setOnAction(
         event -> {
-          String message = secondTF.getText();
+          String message = msgInputTF.getText();
           try {
             Message m = chatter.send(partner, message);
             messages.add(m);
-            secondTF.clear();
+            msgInputTF.clear();
 
           } catch (Exception e) {
             e.printStackTrace();
@@ -108,25 +126,19 @@ public class ChatPanel extends VBox {
                 System.out.println("Received something strange: " + c);
               }
             });
-    // add in VBox that contains all the elements
-    //this.getChildren().addAll(scrollPane, lowerHBox);
-    displayChatHistory();
   }
 
-  private void displayChatHistory(){
-    chatHistory.getMessages().forEach(m -> {displayMessage(m, m.getTargetUsername().equals(chatHistory.getUser()));} );
-
-  }
-
-
-  private void removeOldChat(){
+  private void removeOldChat() {
     upperVBox.getChildren().clear();
   }
+
   public void createNewChat(String newPartner) throws IOException {
     saveHistory();
     removeOldChat();
     partner = newPartner;
+    LOGGER.debug("Savefile: {}", getSaveFile());
     chatHistory = loadOrCreateHistory();
+    initMessageHandling();
     displayChatHistory();
   }
 
@@ -150,7 +162,15 @@ public class ChatPanel extends VBox {
   }
 
   public void saveHistory() throws IOException {
+    if(partner != null){
+
     JSONUtils.writeToJSONFile(chatHistory, new File((getSaveFile())));
+    }
+  }
+
+  public void deleteHistory(String username) throws IOException {
+    Path path = Paths.get(IOUtils.getDirectory(), "history-" + username + ".json");
+    Files.delete(path);
   }
 
   public ChatHistory loadHistory() throws IOException {
