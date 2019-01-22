@@ -19,6 +19,10 @@ import java.util.ArrayList;
  */
 public class ModifiableListView<T> extends BorderPane {
 
+  public ListView<T> getListView() {
+    return listView;
+  }
+
   // TODO Allow custom styling
 
   protected ModifiableListController<T> controller = null;
