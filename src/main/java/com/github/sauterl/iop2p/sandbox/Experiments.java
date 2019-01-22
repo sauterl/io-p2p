@@ -25,7 +25,7 @@ public class Experiments {
   public static void main(String[] args)
       throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
 
-    String privateKeyPath = "C:/Users/Loris/.babun/cygwin/home/Loris/.ssh/awsunibas";
+    String privateKeyPath = "/usr/local/bin/ipfs";
     Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
 
     FileReader fr = new FileReader(privateKeyPath);
