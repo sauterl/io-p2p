@@ -3,12 +3,15 @@ package com.github.sauterl.iop2p.ui;
 import com.github.sauterl.iop2p.net.Chatter;
 import java.io.IOException;
 import javafx.application.Application;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Orientation;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
 public class ChatWindow extends Application {
@@ -29,14 +32,19 @@ public class ChatWindow extends Application {
 
     SplitPane splitter = new SplitPane();
     splitter.setOrientation(Orientation.HORIZONTAL);
-    splitter.setDividerPositions(0.25);
+    splitter.setDividerPositions(0.15);
     root.getChildren().add(splitter);
     splitter.prefWidthProperty().bind(root.widthProperty());
     splitter.prefHeightProperty().bind(root.heightProperty());
+    cp.prefWidthProperty().bind(splitter.widthProperty().subtract(splitter.widthProperty().multiply(.15)));
+    cp.prefHeightProperty().bind(splitter.heightProperty());
 
-    splitter.getItems().addAll(new Label("links"),cp);
+    Region left = new Label("LINKS");
+    splitter.getItems().addAll(left,cp);
     Scene scene = new Scene(root, 500, 400);
     primaryStage.setScene(scene);
+
+    left.prefWidthProperty().bind(splitter.widthProperty().multiply(.15));
 
     primaryStage
         .getIcons()

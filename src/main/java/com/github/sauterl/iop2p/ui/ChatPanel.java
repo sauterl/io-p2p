@@ -44,14 +44,13 @@ public class ChatPanel extends VBox {
     chatHistory = loadOrCreateHistory();
     messages = FXCollections.observableList(chatHistory.getMessages());
 
-    setMinHeight(50);
-    setMinWidth(100);
+    //setMinHeight(50);
+    //setMinWidth(100);
 
     //BorderPane border = new BorderPane();
 
     // upper VBox
     upperVBox = new VBox();
-    upperVBox.setPrefSize(300, 220);
     // scroll pane for all the sent & received messages
     ScrollPane scrollPane = new ScrollPane();
     // Setting a horizontal scroll bar
@@ -59,6 +58,8 @@ public class ChatPanel extends VBox {
     // Setting vertical scroll bar
     scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
     scrollPane.setContent(upperVBox);
+
+    scrollPane.prefWidthProperty().bind(widthProperty());
 
     getChildren().add(scrollPane);
     VBox.setVgrow(scrollPane, Priority.ALWAYS);
@@ -73,11 +74,12 @@ public class ChatPanel extends VBox {
 
     // add in VBox that contains all the elements
     // lowerHBox.getChildren().add(firstTF);
-    //HBox.setHgrow(secondTF, Priority.SOMETIMES);
+    HBox.setHgrow(secondTF, Priority.ALWAYS);
     lowerHBox.getChildren().add(secondTF);
     lowerHBox.getChildren().add(b);
     getChildren().add(lowerHBox);
 
+    lowerHBox.prefWidthProperty().bind(widthProperty());
     b.setDefaultButton(true);
     b.setOnAction(
         event -> {
