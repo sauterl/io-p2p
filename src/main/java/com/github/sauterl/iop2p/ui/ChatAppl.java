@@ -25,7 +25,11 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class ChatWindow extends Application implements ModifiableListHandler<String> {
+/**
+ * @deprecated USe P2pChatApplication instead
+ */
+@Deprecated
+public class ChatAppl extends Application implements ModifiableListHandler<String> {
 
   public static final double DIVIDERRATIO = 0.4;
   private ChatPanel cp;
@@ -88,7 +92,7 @@ public class ChatWindow extends Application implements ModifiableListHandler<Str
 
     primaryStage
         .getIcons()
-        .addAll(new Image(ChatWindow.class.getClassLoader().getResourceAsStream("icon.png")));
+        .addAll(new Image(ChatAppl.class.getClassLoader().getResourceAsStream("icon.png")));
 
     primaryStage.show();
 

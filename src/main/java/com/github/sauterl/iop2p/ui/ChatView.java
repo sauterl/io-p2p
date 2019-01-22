@@ -35,7 +35,12 @@ public class ChatView extends VBox {
 
 
   public ChatView(String they, Chatter chatter) {
-    this.chat = new Chat(they, chatter);
+    this( new Chat(they, chatter));
+
+  }
+
+  public ChatView(Chat chat){
+    this.chat = chat;
     chat.setView(this);
     initComponents();
     layoutComponents();
@@ -166,6 +171,10 @@ public class ChatView extends VBox {
 
   ObservableList<Message> getMessages() {
     return messages;
+  }
+
+  public Chat getChat(){
+    return chat;
   }
 
 }

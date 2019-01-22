@@ -32,7 +32,7 @@ public class Chat {
     this.us = chatter.getUsername();
     this.they = they;
     this.chatter = chatter;
-    chatter.setOnMessageReceived(this::receive);
+    //chatter.setOnMessageReceived(this::receive);
     try {
       load();
     } catch (IOException e) {

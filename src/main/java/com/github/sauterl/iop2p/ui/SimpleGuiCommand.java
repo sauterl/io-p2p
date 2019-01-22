@@ -6,7 +6,6 @@ import com.github.rvesse.airline.annotations.restrictions.Required;
 import com.github.sauterl.iop2p.cli.AbstractCommand;
 import com.github.sauterl.iop2p.ipfs.IPFSAdapter;
 import io.ipfs.api.IPFS;
-import io.ipfs.multiaddr.MultiAddress;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -42,7 +41,8 @@ public class SimpleGuiCommand extends AbstractCommand {
   private IPFS ipfs;
   @Override
   public void execute() {
-    LaunchHelper<ChatWindow> launchHelper = new LaunchHelper<>(ChatWindow.class);
+    //LaunchHelper<ChatAppl> launchHelper = new LaunchHelper<>(ChatAppl.class);
+    LaunchHelper<P2PChatApplication> launchHelper = new LaunchHelper<>(P2PChatApplication.class);
     try {
       IPFSAdapter adapter = IPFSAdapter.create(getIpfsExecutable(), getIpfsRepo());
       ipfs = adapter.ipfs();
