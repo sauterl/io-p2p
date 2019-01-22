@@ -1,7 +1,12 @@
 package com.github.sauterl.iop2p.ui;
 
 import com.github.sauterl.iop2p.net.Chatter;
+import com.github.sauterl.iop2p.ui.components.ModifiableListHandler;
+import com.github.sauterl.iop2p.ui.components.ModifiableListView;
+import com.github.sauterl.iop2p.ui.components.ModifiableListView.AddEvent;
+import com.github.sauterl.iop2p.ui.components.ModifiableListView.RemoveEvent;
 import java.io.IOException;
+import java.util.Optional;
 import javafx.application.Application;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.geometry.Orientation;
@@ -9,12 +14,15 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.SplitPane;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
 import javafx.stage.Stage;
 
-public class ChatWindow extends Application {
+public class ChatWindow extends Application implements ModifiableListHandler<String> {
+
+  private ChatPanel cp;
 
   @Override
   public void start(Stage primaryStage) {
@@ -25,7 +33,8 @@ public class ChatWindow extends Application {
             SimpleGuiCommand.getInstance().getUsername(),
             SimpleGuiCommand.getInstance().getIpfs().pubsub);
     chatter.start();
-    ChatPanel cp = new ChatPanel(chatter, "bob"); // TODO
+    // TODO
+    cp = new ChatPanel(chatter, "bob");
 
     HBox root = new HBox();
 
@@ -39,12 +48,12 @@ public class ChatWindow extends Application {
     cp.prefWidthProperty().bind(splitter.widthProperty().subtract(splitter.widthProperty().multiply(.15)));
     cp.prefHeightProperty().bind(splitter.heightProperty());
 
-    Region left = new Label("LINKS");
-    splitter.getItems().addAll(left,cp);
+    ModifiableListView<String> choice = new ModifiableListView<>("Chats");
+    choice.addHandler(this);
+
+    splitter.getItems().addAll(choice, cp);
     Scene scene = new Scene(root, 500, 400);
     primaryStage.setScene(scene);
-
-    left.prefWidthProperty().bind(splitter.widthProperty().multiply(.15));
 
     primaryStage
         .getIcons()
@@ -67,5 +76,29 @@ public class ChatWindow extends Application {
   public void stop() throws Exception {
     super.stop();
     System.exit(0); // Cause IPFS daemon sub-process to halt
+  }
+
+  @Override
+  public void onRemove(RemoveEvent<String> event) {
+
+  }
+
+  @Override
+  public void onAdd(AddEvent<String> event) {
+    TextInputDialog dialog = new TextInputDialog("Bob");
+
+    dialog.setTitle("Chat");
+    dialog.setHeaderText("Enter the name of your partner:");
+    dialog.setContentText("Name:");
+
+    Optional<String> result = dialog.showAndWait();
+
+    result.ifPresent(name -> {
+      try {
+        cp.createNewChat(name);
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    });
   }
 }

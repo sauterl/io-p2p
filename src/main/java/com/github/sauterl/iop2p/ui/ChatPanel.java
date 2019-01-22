@@ -110,7 +110,24 @@ public class ChatPanel extends VBox {
             });
     // add in VBox that contains all the elements
     //this.getChildren().addAll(scrollPane, lowerHBox);
+    displayChatHistory();
+  }
+
+  private void displayChatHistory(){
     chatHistory.getMessages().forEach(m -> {displayMessage(m, m.getTargetUsername().equals(chatHistory.getUser()));} );
+
+  }
+
+
+  private void removeOldChat(){
+    upperVBox.getChildren().clear();
+  }
+  public void createNewChat(String newPartner) throws IOException {
+    saveHistory();
+    removeOldChat();
+    partner = newPartner;
+    chatHistory = loadOrCreateHistory();
+    displayChatHistory();
   }
 
   private ChatHistory loadOrCreateHistory() {
