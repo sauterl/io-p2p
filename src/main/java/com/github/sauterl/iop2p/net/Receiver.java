@@ -42,7 +42,7 @@ public class Receiver implements Runnable {
                   Optional<Message> prsdMsg = parse(rawMsg);
                   if(prsdMsg.isPresent()){
                     Message actual = prsdMsg.get();
-                    System.out.println(actual.getPayload());
+                    System.out.println(actual.getPayload()); // Print on console
                     messages.add(actual);
                   }else{
                     System.out.println("Coudln't handle: "+rawMsg);
