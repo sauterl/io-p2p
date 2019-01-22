@@ -11,10 +11,12 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Receiver implements Runnable {
 
-  // TODO Loggerize
+  private static final Logger LOGGER = LoggerFactory.getLogger(Receiver.class);
 
   private String topic;
   private Pubsub pubsub;
@@ -39,16 +41,17 @@ public class Receiver implements Runnable {
               msg -> {
                 try {
                   String rawMsg = parseRaw((String) msg.get("data"));
+                  LOGGER.trace("Received raw: {}", rawMsg);
                   Optional<Message> prsdMsg = parse(rawMsg);
                   if(prsdMsg.isPresent()){
                     Message actual = prsdMsg.get();
-                    System.out.println(actual.getPayload()); // Print on console
+                    LOGGER.debug("Received Message: {}",actual);
                     messages.add(actual);
                   }else{
-                    System.out.println("Coudln't handle: "+rawMsg);
+                    LOGGER.warn("Received non-valid message: {}", rawMsg);
                   }
                 } catch (Base64DecodingException | IOException e) {
-                  e.printStackTrace();
+                  LOGGER.warn("Ignoring exception during receiving.", e);
                 }
               });
     } catch (Exception e) {

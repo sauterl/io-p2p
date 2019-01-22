@@ -33,9 +33,14 @@ public class ChatWindow extends Application implements ModifiableListHandler<Str
 
   private static final Logger LOGGER = LoggerFactory.getLogger("Application");
 
+
+
   @Override
   public void start(Stage primaryStage) {
     // TODO: Cleanup of threading
+
+    Thread.setDefaultUncaughtExceptionHandler((t, e) -> LOGGER.error("ERROR!", e));
+
 
     Chatter chatter =
         new Chatter(
@@ -61,6 +66,9 @@ public class ChatWindow extends Application implements ModifiableListHandler<Str
     cp.setChatPartners(choice);
     choice.addHandler(this);
     splitter.getItems().addAll(choice, cp);
+
+
+
     choice
         .getListView()
         .getSelectionModel()
@@ -96,6 +104,7 @@ public class ChatWindow extends Application implements ModifiableListHandler<Str
 
     loadChatsOnStart();
 
+    splitter.getItems().add(1, new ChatView("bob", chatter));
   }
 
   public void loadChatsOnStart() {
