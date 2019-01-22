@@ -51,6 +51,10 @@ public class Chatter {
     return message;
   }
 
+  public void send(Message m) throws Exception {
+    sender.send(m);
+  }
+
   public void stop() {
     receiverThred.interrupt();
     msgHandlerThread.interrupt();

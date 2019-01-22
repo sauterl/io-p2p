@@ -10,15 +10,20 @@ public class Message {
   private String payload;
   private String sourceUsername;
   private String targetUsername;
-  protected MessageType type;
+  protected MessageType type = MessageType.PLAIN;
 
   public Message() {
-    type = MessageType.PLAIN;
   }
 
   public Message(String msg) {
     this.payload = msg;
     type = MessageType.PLAIN;
+  }
+
+  public Message(EncryptedMessage enc) {
+    setSourceUsername(enc.getSourceUsername());
+    setTargetUsername(enc.getTargetUsername());
+    setTimestamp(enc.getTimestamp());
   }
 
   public long getTimestamp() {

@@ -12,4 +12,10 @@ public class EncryptedMessage extends Message {
     type = MessageType.ENCRYPTED;
   }
 
+  public EncryptedMessage(Message m){
+    setSourceUsername(m.getSourceUsername());
+    setTargetUsername(m.getTargetUsername());
+    setTimestamp(m.getTimestamp());
+  }
+
 }
