@@ -91,7 +91,7 @@ public class ChatPanel extends VBox {
 
     // add in VBox that contains all the elements
     // this.getChildren().addAll(scrollPane, lowerHBox);
-    //displayChatHistory();
+    // displayChatHistory();
   }
 
   private void displayChatHistory() {
@@ -103,7 +103,7 @@ public class ChatPanel extends VBox {
             });
   }
 
-  private void initMessageHandling(){
+  private void initMessageHandling() {
     messages = FXCollections.observableList(chatHistory.getMessages());
     sendBtn.setOnAction(
         event -> {
@@ -112,7 +112,7 @@ public class ChatPanel extends VBox {
             Message m = chatter.send(partner, message);
             messages.add(m);
             msgInputTF.clear();
-
+            saveHistory();
           } catch (Exception e) {
             e.printStackTrace();
           }
@@ -175,9 +175,9 @@ public class ChatPanel extends VBox {
   }
 
   public void saveHistory() throws IOException {
-    if(partner != null){
+    if (partner != null) {
 
-    JSONUtils.writeToJSONFile(chatHistory, new File((getSaveFile())));
+      JSONUtils.writeToJSONFile(chatHistory, new File((getSaveFile())));
     }
   }
 
@@ -221,10 +221,9 @@ public class ChatPanel extends VBox {
         .append(": ")
         .append(messageText);
 
-
     MDFXNode mdfx = new MDFXNode(stringBuilder.toString());
     getParent().getStylesheets().add("/com/sandec/mdfx/mdfx-default.css");
-    //mdfx.setWrapText(true);
+    // mdfx.setWrapText(true);
     upperVBox.getChildren().add(mdfx);
   }
 
