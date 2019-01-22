@@ -3,8 +3,12 @@ package com.github.sauterl.iop2p.ui;
 import com.github.sauterl.iop2p.net.Chatter;
 import java.io.IOException;
 import javafx.application.Application;
+import javafx.geometry.Orientation;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.control.SplitPane;
 import javafx.scene.image.Image;
+import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
 
 public class ChatWindow extends Application {
@@ -20,7 +24,18 @@ public class ChatWindow extends Application {
     chatter.start();
     ChatPanel cp = new ChatPanel(chatter, "bob"); // TODO
 
-    Scene scene = new Scene(cp, 500, 400);
+    HBox root = new HBox();
+
+
+    SplitPane splitter = new SplitPane();
+    splitter.setOrientation(Orientation.HORIZONTAL);
+    splitter.setDividerPositions(0.25);
+    root.getChildren().add(splitter);
+    splitter.prefWidthProperty().bind(root.widthProperty());
+    splitter.prefHeightProperty().bind(root.heightProperty());
+
+    splitter.getItems().addAll(new Label("links"),cp);
+    Scene scene = new Scene(root, 500, 400);
     primaryStage.setScene(scene);
 
     primaryStage
