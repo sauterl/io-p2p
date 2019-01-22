@@ -95,4 +95,8 @@ public class Chatter {
   private boolean hasNewMessageConsumer() {
     return newMessageConsumer != null;
   }
+
+  public String getUsername() {
+    return username;
+  }
 }

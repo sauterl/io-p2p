@@ -58,6 +58,7 @@ public class ChatWindow extends Application implements ModifiableListHandler<Str
     cp.prefHeightProperty().bind(splitter.heightProperty());
 
     choice = new ModifiableListView<>("Chats");
+    cp.setChatPartners(choice);
     choice.addHandler(this);
     splitter.getItems().addAll(choice, cp);
     choice

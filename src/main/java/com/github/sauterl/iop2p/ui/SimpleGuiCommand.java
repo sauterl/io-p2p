@@ -6,6 +6,7 @@ import com.github.rvesse.airline.annotations.restrictions.Required;
 import com.github.sauterl.iop2p.cli.AbstractCommand;
 import com.github.sauterl.iop2p.ipfs.IPFSAdapter;
 import io.ipfs.api.IPFS;
+import io.ipfs.multiaddr.MultiAddress;
 import java.util.concurrent.ExecutionException;
 
 /**

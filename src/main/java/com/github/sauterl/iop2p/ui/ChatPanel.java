@@ -7,6 +7,7 @@ import com.github.sauterl.iop2p.Utils;
 import com.github.sauterl.iop2p.data.ChatHistory;
 import com.github.sauterl.iop2p.data.Message;
 import com.github.sauterl.iop2p.net.Chatter;
+import com.github.sauterl.iop2p.ui.components.ModifiableListView;
 import com.sandec.mdfx.MDFXNode;
 import java.io.File;
 import java.io.IOException;
@@ -21,6 +22,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
@@ -43,6 +45,12 @@ public class ChatPanel extends VBox {
   private final Button sendBtn;
   private final TextField msgInputTF;
   private Chatter chatter;
+
+  private ModifiableListView<String>  chatPartners;
+
+  public void setChatPartners(ModifiableListView<String> chatPartners) {
+    this.chatPartners = chatPartners;
+  }
 
   public ChatPanel(Chatter chatter) {
     this.partner = null;
@@ -118,14 +126,7 @@ public class ChatPanel extends VBox {
           }
         });
 
-    chatter.setOnMessageReceived(m -> Platform.runLater(() -> {
-      messages.add(m);
-      try {
-        LOGGER.debug("Received message: {}", JSONUtils.toJSON(m));
-      } catch (JsonProcessingException e) {
-        e.printStackTrace();
-      }
-    }));
+    chatter.setOnMessageReceived(this::handleIncomingMessage);
     messages.addListener(
         (ListChangeListener<Message>)
             c -> {
@@ -239,5 +240,40 @@ public class ChatPanel extends VBox {
     }
     st.getChildren().add(l);
     return st;
+  }
+
+  private void handleIncomingMessage(Message m){
+    // TODO Handle msg type
+    LOGGER.debug("Incoming: {}",m);
+    if(m.getTargetUsername().equals(chatter.getUsername())){
+      if(partner.equals(m.getSourceUsername())){
+        // all good.
+        handleMessage(m);
+      }else{
+        // Not good: Not this chat
+        if(chatPartners.getItems().contains(m.getSourceUsername())){
+          chatPartners.getListView().getSelectionModel().select(m.getSourceUsername());
+          handleMessage(m); // not sure whether working correctly or not
+        }else{
+          chatPartners.getListView().getItems().add(m.getSourceUsername());
+          chatPartners.getListView().getSelectionModel().select(m.getSourceUsername());
+          handleMessage(m);
+        }
+      }
+    }else{
+      LOGGER.warn("Received message not for us: {}", m);
+    }
+
+  }
+
+  private void handleMessage(Message m) {
+    Platform.runLater(() -> {
+      messages.add(m);
+      try {
+        LOGGER.debug("Received message: {}", JSONUtils.toJSON(m));
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+      }
+    });
   }
 }
