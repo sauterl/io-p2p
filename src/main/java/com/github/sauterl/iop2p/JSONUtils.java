@@ -2,6 +2,7 @@ package com.github.sauterl.iop2p;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import java.io.File;
 import java.io.IOException;
@@ -18,10 +19,7 @@ public class JSONUtils {
   }
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-
-  {
-    OBJECT_MAPPER.enable(SerializationFeature.INDENT_OUTPUT);
-  }
+  private static final ObjectWriter WRITER = OBJECT_MAPPER.writer().with(SerializationFeature.INDENT_OUTPUT);
 
   /**
    * Converts the given object into its JSON representation.
@@ -32,7 +30,7 @@ public class JSONUtils {
    * @see ObjectMapper#writeValueAsString(Object)
    */
   public static String toJSON(Object obj) throws JsonProcessingException {
-    return OBJECT_MAPPER.writeValueAsString(obj);
+    return WRITER.writeValueAsString(obj);
   }
 
   /**
@@ -44,7 +42,7 @@ public class JSONUtils {
    * @see ObjectMapper#writeValue(File, Object)
    */
   public static void writeToJSONFile(Object obj, File file) throws IOException {
-    OBJECT_MAPPER.writeValue(file, obj);
+    WRITER.writeValue(file, obj);
   }
 
   /**

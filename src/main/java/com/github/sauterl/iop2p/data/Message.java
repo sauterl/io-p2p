@@ -5,10 +5,20 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Message {
 
-  public Message() {}
+
+  private long timestamp = System.currentTimeMillis();
+  private String payload;
+  private String sourceUsername;
+  private String targetUsername;
+  protected MessageType type;
+
+  public Message() {
+    type = MessageType.PLAIN;
+  }
 
   public Message(String msg) {
     this.payload = msg;
+    type = MessageType.PLAIN;
   }
 
   public long getTimestamp() {
@@ -27,10 +37,13 @@ public class Message {
     this.payload = payload;
   }
 
-  private long timestamp = System.currentTimeMillis();
-  private String payload;
-  private String sourceUsername;
-  private String targetUsername;
+  public MessageType getType() {
+    return type;
+  }
+
+  public void setType(MessageType type) {
+    this.type = type;
+  }
 
   public String getSourceUsername() {
     return sourceUsername;
