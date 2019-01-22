@@ -2,6 +2,7 @@ package com.github.sauterl.iop2p.ui;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +25,10 @@ public class P2PChatApplication extends Application {
     primaryStage.setTitle("peer-text-peer -- IPFS based Chat");
 
     window.getManager().loadExisitngChats();
+
+    primaryStage
+        .getIcons()
+        .addAll(new Image(getClass().getClassLoader().getResourceAsStream("icon.png")));
 
     primaryStage.show();
     primaryStage.setOnCloseRequest(event -> {
