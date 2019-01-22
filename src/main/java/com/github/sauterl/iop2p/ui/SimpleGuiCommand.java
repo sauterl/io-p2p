@@ -20,6 +20,9 @@ public class SimpleGuiCommand extends AbstractCommand {
   @Required
   private String username;
 
+  @Option(title="Keystore file", name={"-k", "--keystore"})
+  private String keystoreFile;
+
   public String getUsername() {
     return username;
   }
