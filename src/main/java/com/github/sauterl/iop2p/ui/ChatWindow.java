@@ -74,7 +74,6 @@ public class ChatWindow extends Application implements ModifiableListHandler<Str
               }
             });
 
-    loadChatsOnStart();
     Scene scene = new Scene(root, 800, 600);
     primaryStage.setScene(scene);
 
@@ -93,6 +92,9 @@ public class ChatWindow extends Application implements ModifiableListHandler<Str
             e1.printStackTrace();
           }
         });
+
+    loadChatsOnStart();
+
   }
 
   public void loadChatsOnStart() {

@@ -5,6 +5,7 @@ import com.github.sauterl.iop2p.JSONUtils;
 import com.github.sauterl.iop2p.data.ChatHistory;
 import com.github.sauterl.iop2p.data.Message;
 import com.github.sauterl.iop2p.net.Chatter;
+import com.sandec.mdfx.MDFXNode;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -208,8 +209,10 @@ public class ChatPanel extends VBox {
         .append(": ")
         .append(messageText);
 
-    Label label = new Label(stringBuilder.toString());
-    label.setWrapText(true);
-    upperVBox.getChildren().add(label);
+
+    MDFXNode mdfx = new MDFXNode(stringBuilder.toString());
+    getParent().getStylesheets().add("/com/sandec/mdfx/mdfx-default.css");
+    //mdfx.setWrapText(true);
+    upperVBox.getChildren().add(mdfx);
   }
 }
