@@ -4,6 +4,8 @@ import com.github.sauterl.iop2p.Utils;
 import com.github.sauterl.iop2p.data.Message;
 import io.ipfs.api.IPFS.Pubsub;
 import java.util.function.Consumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * TODO: write JavaDoc
@@ -11,6 +13,8 @@ import java.util.function.Consumer;
  * @author loris.sauter
  */
 public class Chatter {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(Chatter.class);
 
   private Receiver receiver;
   private Sender sender;
@@ -29,13 +33,21 @@ public class Chatter {
     msgHandlerThread =
         new Thread(
             () -> {
+              LOGGER.debug("MessageHandlerThread running...");
               while (true) {
                 if (hasNewMessageConsumer()) {
                   try {
-                    newMessageConsumer.accept(getNextMessage());
+                    LOGGER.debug("Waiting for message");
+                    Message m = getNextMessage();
+                    LOGGER.debug("Msg: {}",m);
+                    newMessageConsumer.accept(m);
                   } catch (InterruptedException e) {
                     e.printStackTrace();
                     break;
+                  }
+                }else{
+                  if(System.currentTimeMillis() % 1000 == 0){
+                    LOGGER.debug("Consumer: {}",hasNewMessageConsumer());
                   }
                 }
               }
@@ -76,6 +88,7 @@ public class Chatter {
   }
 
   public void setOnMessageReceived(Consumer<Message> consumer) {
+    LOGGER.debug("Setting consumer: {}", consumer);
     newMessageConsumer = consumer;
   }
 

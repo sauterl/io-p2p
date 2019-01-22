@@ -65,4 +65,16 @@ public class Message {
   public void setTargetUsername(String targetUsername) {
     this.targetUsername = targetUsername;
   }
+
+  @Override
+  public String toString() {
+    final StringBuilder sb = new StringBuilder("Message{");
+    sb.append("timestamp=").append(timestamp);
+    sb.append(", payload='").append(payload).append('\'');
+    sb.append(", sourceUsername='").append(sourceUsername).append('\'');
+    sb.append(", targetUsername='").append(targetUsername).append('\'');
+    sb.append(", type=").append(type);
+    sb.append('}');
+    return sb.toString();
+  }
 }

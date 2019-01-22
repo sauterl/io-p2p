@@ -1,7 +1,9 @@
 package com.github.sauterl.iop2p.ui;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.sauterl.iop2p.IOUtils;
 import com.github.sauterl.iop2p.JSONUtils;
+import com.github.sauterl.iop2p.Utils;
 import com.github.sauterl.iop2p.data.ChatHistory;
 import com.github.sauterl.iop2p.data.Message;
 import com.github.sauterl.iop2p.net.Chatter;
@@ -23,7 +25,10 @@ import javafx.scene.control.ScrollPane.ScrollBarPolicy;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.SVGPath;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,7 +117,14 @@ public class ChatPanel extends VBox {
           }
         });
 
-    chatter.setOnMessageReceived(m -> Platform.runLater(() -> messages.add(m)));
+    chatter.setOnMessageReceived(m -> Platform.runLater(() -> {
+      messages.add(m);
+      try {
+        LOGGER.debug("Received message: {}", JSONUtils.toJSON(m));
+      } catch (JsonProcessingException e) {
+        e.printStackTrace();
+      }
+    }));
     messages.addListener(
         (ListChangeListener<Message>)
             c -> {
@@ -175,7 +187,7 @@ public class ChatPanel extends VBox {
 
   public ChatHistory loadHistory() throws IOException {
     ChatHistory ch = JSONUtils.readFromJSONFile(new File((getSaveFile())), ChatHistory.class);
-    LOGGER.debug("Loaded history: {}", JSONUtils.toJSON(ch));
+    LOGGER.trace("Loaded history: {}", JSONUtils.toJSON(ch));
     return ch;
   }
 
@@ -210,6 +222,19 @@ public class ChatPanel extends VBox {
 
     Label label = new Label(stringBuilder.toString());
     label.setWrapText(true);
-    upperVBox.getChildren().add(label);
+    upperVBox.getChildren().add(createSpeechBubble(messageText,self));
+  }
+
+  private Region createSpeechBubble(String msg, boolean self){
+    StackPane st = new StackPane();
+    Label l = new Label(msg);
+    l.setWrapText(true);
+    if(self){
+      st.getChildren().add(Utils.createRightSpeechBubble());
+    }else{
+      st.getChildren().add(Utils.createLeftSpeechBubble());
+    }
+    st.getChildren().add(l);
+    return st;
   }
 }
