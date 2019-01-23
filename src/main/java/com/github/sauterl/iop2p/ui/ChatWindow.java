@@ -87,7 +87,6 @@ public class ChatWindow extends VBox {
                   + dialog.getResult().getId());
         });
   }
-  // /ip4/ip/tcp/port/ipfs/partnerID
 
   void selectChat(String chat) {
     list.getListView().getSelectionModel().select(chat);
