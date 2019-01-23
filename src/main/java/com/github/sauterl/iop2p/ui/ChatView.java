@@ -299,13 +299,14 @@ public class ChatView extends VBox {
     HBox wrapper = new HBox();
 
     Label dateLbl = new Label(time);
-    Label msgLbl = new Label(message.getPayload());
+//    Label msgLbl = new Label(message.getPayload());
+    VBox msgLbl = new MDFXNode(message.getPayload());
     msgLbl.setAlignment(self ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
     msgLbl.setPadding(new Insets(2.5, self ? 5 : 10, 10, self ? 10 : 5));
     msgLbl.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY,
         self ? new CornerRadii(5, 0, 5, 5, false) : new CornerRadii(0, 5, 5, 5, false),
         Insets.EMPTY)));
-    msgLbl.setWrapText(true);
+    //msgLbl.setWrapText(true);
     //msgLbl.setMinWidth(50);
 
     Label whoLbl = new Label(usernameFrom);
