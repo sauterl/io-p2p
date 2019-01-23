@@ -8,6 +8,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
@@ -16,6 +17,7 @@ import javafx.scene.control.ButtonBar.ButtonData;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
@@ -110,7 +112,7 @@ public class Utils {
     }
   }
 
-  public static void connectAlert() {
+  public static Dialog<UserCredentials> connectAlert(String[] addresses) {
     // Create login window
     Dialog<UserCredentials> dialog = new Dialog<>();
     dialog.setTitle("peer-text-peer");
@@ -126,9 +128,15 @@ public class Utils {
     grid.setPadding(new Insets(20, 150, 10, 10));
 
     // Display own ID
-    TextField username = new TextField();
+    TextArea username = new TextArea();
     username.setPromptText("Your ID:");
     username.setEditable(false);
+
+    StringBuilder stringBuilder = new StringBuilder();
+    Arrays.stream(addresses).forEach(a -> {stringBuilder.append(a).append("\n");});
+    username.setText(stringBuilder.toString());
+
+
 
     // Enter partner IP
     TextField ipPartner = new TextField();
@@ -155,7 +163,7 @@ public class Utils {
     TextField partnerID = new TextField();
     partnerID.setPromptText("Enter your partner's ID:");
 
-    grid.add(new Label("This is your ID:"), 0, 0);
+    grid.add(new Label("These are your addresses:"), 0, 0);
     grid.add(username, 1, 0);
     grid.add(new Label("Enter your partner's IP:"), 0, 1);
     grid.add(ipPartner, 1, 1);
@@ -186,5 +194,7 @@ public class Utils {
         });
 
     dialog.showAndWait();
+
+    return dialog;
   }
 }
