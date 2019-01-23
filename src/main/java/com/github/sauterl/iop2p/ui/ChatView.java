@@ -1,10 +1,10 @@
 package com.github.sauterl.iop2p.ui;
 
 import com.github.sauterl.iop2p.Utils;
+import com.github.sauterl.iop2p.data.EncryptedMessage;
 import com.github.sauterl.iop2p.data.Message;
 import com.github.sauterl.iop2p.data.MessageType;
 import com.github.sauterl.iop2p.net.Chatter;
-import com.github.sauterl.iop2p.ui.components.Markdown;
 import com.sandec.mdfx.MDFXNode;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -30,9 +30,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.TextFlow;
 import org.commonmark.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -81,7 +78,7 @@ public class ChatView extends VBox {
       m.setTargetUsername(chat.getThey());
       m.setTimestamp(System.currentTimeMillis());
       m.setPayload(message);
-      chat.send(m);
+      Message toAdd = chat.send(m);
       messages.add(m);
     });
   }
@@ -142,8 +139,14 @@ public class ChatView extends VBox {
 
   private void displayChatMessage(Message message) {
     if (message.getType() == MessageType.PLAIN) {
-      messagesBox.getChildren().add(createSpeechBubbleDisplayV3(message));
-    } else {
+      messagesBox.getChildren().add(createSpeechBubbleDisplayV3(message, false));
+    } else if(message.getType() == MessageType.ENCRYPTED) {
+      chat.decrypt(EncryptedMessage.of(message)).ifPresent(dec -> {
+        LOGGER.debug("Decrypted message {}",dec);
+        messagesBox.getChildren().add(createSpeechBubbleDisplayV3(message, true));
+      });
+
+    }else{
       // TODO switch on type
     }
   }
@@ -286,7 +289,7 @@ public class ChatView extends VBox {
     return pane;
   }
 
-  private Node createSpeechBubbleDisplayV3(Message message) {
+  private Node createSpeechBubbleDisplayV3(Message message, boolean enc) {
     // extract timestamp
     boolean self = chat.getUs().equals(message.getSourceUsername());
 
@@ -308,14 +311,14 @@ public class ChatView extends VBox {
 
     Parser parser = Parser.builder().build();
     org.commonmark.node.Node node = parser.parse(message.getPayload());
-    Markdown markdown = new Markdown();
-    node.accept(markdown);
+    //Markdown markdown = new Markdown();
+    //node.accept(markdown);
 
     Label dateLbl = new Label(time);
     //dateLbl.setFont(Font.font("Arial", FontPosture.ITALIC, Font.getDefault().getSize()));
-//    Label msgLbl = new Label(message.getPayload());
+    Label msgLbl = new Label(message.getPayload() + (enc ? "enc" : ""));
     //VBox msgLbl = new MDFXNode(message.getPayload());
-    TextFlow msgLbl = markdown.getTextflow();
+    //TextFlow msgLbl = markdown.getTextflow();
     if(self){
       msgLbl.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
     }

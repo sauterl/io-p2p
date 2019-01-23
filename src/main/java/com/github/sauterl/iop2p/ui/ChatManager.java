@@ -56,7 +56,23 @@ public class ChatManager implements ModifiableListHandler<String> {
     theChatter.setOnMessageReceived(this::handleIncomingMessage);
     LOGGER.info("Our ID: {}", getOwnNodeId());
     LOGGER.debug("Addresses: {}", Arrays.toString(getOwnAddresses()));
-    // TODO Load keyStore
+
+  }
+
+  public void loadAndInitSecurityModule(){
+    if(IOUtils.hasKeyStore()){
+      try {
+        keyStore = IOUtils.loadKeystore();
+      } catch (IOException e) {
+        LOGGER.error("Could'nt load keystore",e);
+      }
+    }
+    keyStore.entries().forEach(e -> {
+      if(chatHashMap.containsKey(e.getUser())){
+        chatHashMap.get(e.getUser()).setKeystoreEntry(e);
+      }
+    });
+    LOGGER.debug("Loaded keys where possible");
   }
 
   private void handleIncomingMessage(Message m) {
@@ -137,6 +153,13 @@ public class ChatManager implements ModifiableListHandler<String> {
 
   public void stop() {
     theChatter.stop();
+    if(keyStore != null && !keyStore.isEmpty() ){
+      try {
+        IOUtils.saveKeystore(keyStore);
+      } catch (IOException e) {
+        LOGGER.error("Couldn't save keystore");
+      }
+    }
     System.exit(0);
   }
 
@@ -236,10 +259,11 @@ public class ChatManager implements ModifiableListHandler<String> {
     }
   }
 
+
   public void addKeyLocationFor(String they, String keyLocation) {
     // TODO Check if entry exists
     keyStore.add(they, keyLocation);
     keyStore.getEntry(they).ifPresent(activeChat::setKeystoreEntry);
-    LOGGER.debug("Added {}/{} to the keystore");
+    LOGGER.debug("Added {}/{} to the keystore",they,keyLocation);
   }
 }

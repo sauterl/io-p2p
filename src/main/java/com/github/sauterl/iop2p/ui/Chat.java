@@ -3,14 +3,18 @@ package com.github.sauterl.iop2p.ui;
 import com.github.sauterl.iop2p.IOUtils;
 import com.github.sauterl.iop2p.crypto.KeyStore;
 import com.github.sauterl.iop2p.crypto.KeyStore.Entry;
+import com.github.sauterl.iop2p.crypto.RsaProcessor;
 import com.github.sauterl.iop2p.data.ChatHistory;
+import com.github.sauterl.iop2p.data.EncryptedMessage;
 import com.github.sauterl.iop2p.data.Message;
 import com.github.sauterl.iop2p.net.Chatter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Optional;
 import javafx.application.Platform;
+import org.bouncycastle.crypto.InvalidCipherTextException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +54,17 @@ public class Chat {
     return keystoreEntry;
   }
 
+  private RsaProcessor security;
+
   public void setKeystoreEntry(Entry keystoreEntry) {
+    LOGGER.debug("Enabling security {}<->{}",us,they);
     this.keystoreEntry = keystoreEntry;
     encrypted = true;
+    try {
+      security = new RsaProcessor(IOUtils.getOurKeyLocation().toString(),keystoreEntry.getKeyLocation());
+    } catch (IOException e) {
+      LOGGER.error("Coudln't crate security", e);
+    }
   }
 
   public ChatHistory getHistory() {
@@ -81,17 +93,43 @@ public class Chat {
     return they;
   }
 
-  public void send(Message m) {
+  public Message send(Message m) {
     LOGGER.debug("Security={}, sending: {}", encrypted, m);
-    sendMessage(m);
+    if(encrypted){
+      return sendEndrypted(m);
+    }else{
+      return sendMessage(m);
+    }
   }
 
-  private void sendMessage(Message m) {
+  public Message sendEndrypted(Message m){
+    LOGGER.debug("Sending encrypted msg");
+    try {
+      EncryptedMessage encryptedMessage = security.encrypt(m);
+      sendMessage(encryptedMessage);
+      return encryptedMessage;
+    } catch (InvalidCipherTextException e) {
+      LOGGER.error("Couldn't encrypt message. WILL NOT SEND IT",m);
+    }
+    return m;
+  }
+
+  private Message sendMessage(Message m) {
     try {
       chatter.send(m);
       LOGGER.debug("Successfully send message {}", m);
     } catch (Exception e) {
       LOGGER.error("An error occurred during send.", e);
+    }
+    return m;
+  }
+
+  public Optional<Message> decrypt(EncryptedMessage m){
+    try {
+      return Optional.of(security.decrypt(m));
+    } catch (InvalidCipherTextException e) {
+      LOGGER.error("Couldn't decrypt the message",e);
+      return Optional.empty();
     }
   }
 

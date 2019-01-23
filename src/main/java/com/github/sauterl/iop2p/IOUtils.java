@@ -1,5 +1,6 @@
 package com.github.sauterl.iop2p;
 
+import com.github.sauterl.iop2p.crypto.KeyStore;
 import com.github.sauterl.iop2p.data.ChatHistory;
 import java.io.File;
 import java.io.IOException;
@@ -49,4 +50,31 @@ public class IOUtils {
     LOGGER.info("Loaded history from {}", path);
     return history;
   }
+
+  public static void saveKeystore(KeyStore store) throws IOException {
+    Path path = getKeystorePath();
+    JSONUtils.writeToJSONFile(store, path.toFile());
+    LOGGER.info("Wrote keystore at {}", path);
+  }
+
+  public static KeyStore loadKeystore() throws IOException {
+    Path path = getKeystorePath();
+    KeyStore store = JSONUtils.readFromJSONFile(path.toFile(), KeyStore.class);
+    LOGGER.info("Loaded keystore from {}", path);
+    return store;
+  }
+
+  public static boolean hasKeyStore(){
+    return Files.exists(getKeystorePath());
+  }
+
+  private static Path getKeystorePath() {
+    return Paths.get(getDirectory(), "keystore.json");
+  }
+
+  public static Path getOurKeyLocation(){
+    return Paths.get(getDirectory(), "my-keys/");
+  }
+
+
 }

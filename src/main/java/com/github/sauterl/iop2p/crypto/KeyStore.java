@@ -42,6 +42,14 @@ public class KeyStore {
     return keys.stream().filter(entry -> entry.user.equals(they)).findFirst();
   }
 
+  public boolean isEmpty() {
+    return keys.isEmpty();
+  }
+
+  public List<Entry> entries() {
+    return new ArrayList<>(keys);
+  }
+
   /**
    * The actual entry which maps usernames and keystore location
    */

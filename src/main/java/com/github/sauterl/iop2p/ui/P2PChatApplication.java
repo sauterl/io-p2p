@@ -25,6 +25,7 @@ public class P2PChatApplication extends Application {
     primaryStage.setTitle("peer-text-peer -- IPFS based Chat");
 
     window.getManager().loadExisitngChats();
+    window.getManager().loadAndInitSecurityModule();
 
     primaryStage
         .getIcons()

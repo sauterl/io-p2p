@@ -18,4 +18,9 @@ public class EncryptedMessage extends Message {
     setTimestamp(m.getTimestamp());
   }
 
+  public static EncryptedMessage of(Message message) {
+    EncryptedMessage m = new EncryptedMessage(message);
+    m.setPayload(message.getPayload());
+    return m;
+  }
 }
