@@ -75,6 +75,7 @@ public class ChatView extends VBox {
       m.setTargetUsername(chat.getThey());
       m.setTimestamp(System.currentTimeMillis());
       m.setPayload(message);
+      chat.send(m);
       messages.add(m);
     });
   }
