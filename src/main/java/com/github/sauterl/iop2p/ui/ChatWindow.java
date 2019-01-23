@@ -47,9 +47,7 @@ public class ChatWindow extends VBox {
     return list;
   }
 
-  /**
-   * Initializes the UI components and performs configuration of them
-   */
+  /** Initializes the UI components and performs configuration of them */
   private void initComponents() {
     splitPane = new SplitPane();
     splitPane.setOrientation(Orientation.HORIZONTAL);
@@ -83,13 +81,15 @@ public class ChatWindow extends VBox {
     connect.setOnAction(
         e -> {
           Dialog<UserCredentials> dialog = connectAlert(manager.getOwnAddresses());
-          manager.connectToNode(
-              "/ip4/"
-                  + dialog.getResult().getIp()
-                  + "/tcp/"
-                  + dialog.getResult().getPort()
-                  + "/ipfs/"
-                  + dialog.getResult().getId());
+          String multiAddr = "/ip4/"
+              + dialog.getResult().getIp()
+              + "/tcp/"
+              + dialog.getResult().getPort()
+              + "/ipfs/"
+              + dialog.getResult().getId();
+    LOGGER.debug(multiAddr);
+          manager.connectToNode(multiAddr);
+
         });
 
 
@@ -109,9 +109,7 @@ public class ChatWindow extends VBox {
     list.getListView().getSelectionModel().select(chat);
   }
 
-  /**
-   * Will setup the layout, e.g. the look and feel of this component
-   */
+  /** Will setup the layout, e.g. the look and feel of this component */
   private void layoutComponents() {
     getChildren().addAll(menuBar, splitPane);
 

@@ -1,19 +1,8 @@
 package com.github.sauterl.iop2p.sandbox;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.Security;
-import java.security.spec.InvalidKeySpecException;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.bouncycastle.crypto.AsymmetricBlockCipher;
-import org.bouncycastle.crypto.engines.RSAEngine;
-import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
-import org.bouncycastle.crypto.util.PrivateKeyFactory;
+import com.github.sauterl.iop2p.ui.components.Markdown;
+import org.commonmark.node.Node;
+import org.commonmark.parser.Parser;
 
 /**
  * TODO: write JavaDoc
@@ -22,46 +11,18 @@ import org.bouncycastle.crypto.util.PrivateKeyFactory;
  */
 public class Experiments {
 
-  public static void main(String[] args)
-      throws IOException, NoSuchAlgorithmException, InvalidKeySpecException {
+  public static void main(String[] args){
 
-    String privateKeyPath = "/usr/local/bin/ipfs";
-    Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+    String example = "*Ich* **bin** ein `Beispiel` für Markdown";
 
-    FileReader fr = new FileReader(privateKeyPath);
-    BufferedReader br = new BufferedReader(fr);
-    StringBuilder sb = new StringBuilder();
-    List<String> l = br.lines().collect(Collectors.toCollection(ArrayList::new));
-    l.remove(0);
-    l.remove(l.size() - 1);
-    l.forEach(sb::append);
-
-    String key = sb.toString();
-
-    Base64.Decoder dec = Base64.getDecoder();
-    AsymmetricKeyParameter privateKey =
-        PrivateKeyFactory.createKey(dec.decode(key));
-
-    AsymmetricBlockCipher e = new RSAEngine();
-    e = new org.bouncycastle.crypto.encodings.PKCS1Encoding(e);
-    e.init(false, privateKey);
-
-    System.out.println("asdf");
+    // log was ein literal ist für jede methode
 
 
-    /*try {
-      //IPFSAdapter.create("C:/Users/loris/uni/11_hs18/internet-overloards/go-ipfs/ipfs.exe");
-      IPFSAdapter ipfsAdapter = IPFSAdapter.create("C:/Users/loris/uni/11_hs18/internet-overloards/go-ipfs/ipfs.exe", "./ipfs-repo");
-      ipfsAdapter.ipfs().pubsub.pub("asdf", "asdf");
-      System.out.println("ffff");
-      ipfsAdapter.close();
-      System.exit(0);
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    } catch (ExecutionException e) {
-      e.printStackTrace();
-    } catch (Exception e) {
-      e.printStackTrace();
-    }*/
+    // beispiel visitor
+    Parser parser = Parser.builder().build();
+    Node node = parser.parse(example);
+    Markdown markdown = new Markdown();
+    node.accept(markdown);
+
   }
 }

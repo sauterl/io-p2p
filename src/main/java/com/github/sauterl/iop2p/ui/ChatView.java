@@ -4,6 +4,7 @@ import com.github.sauterl.iop2p.Utils;
 import com.github.sauterl.iop2p.data.Message;
 import com.github.sauterl.iop2p.data.MessageType;
 import com.github.sauterl.iop2p.net.Chatter;
+import com.github.sauterl.iop2p.ui.components.Markdown;
 import com.sandec.mdfx.MDFXNode;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
@@ -12,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
+import javafx.geometry.NodeOrientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -28,6 +30,10 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Shape;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.TextFlow;
+import org.commonmark.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -299,10 +305,21 @@ public class ChatView extends VBox {
 
     HBox wrapper = new HBox();
 
+
+    Parser parser = Parser.builder().build();
+    org.commonmark.node.Node node = parser.parse(message.getPayload());
+    Markdown markdown = new Markdown();
+    node.accept(markdown);
+
     Label dateLbl = new Label(time);
+    //dateLbl.setFont(Font.font("Arial", FontPosture.ITALIC, Font.getDefault().getSize()));
 //    Label msgLbl = new Label(message.getPayload());
-    VBox msgLbl = new MDFXNode(message.getPayload());
-    msgLbl.setAlignment(self ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
+    //VBox msgLbl = new MDFXNode(message.getPayload());
+    TextFlow msgLbl = markdown.getTextflow();
+    if(self){
+      msgLbl.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
+    }
+    //msgLbl.setAlignment(self ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
     msgLbl.setPadding(new Insets(2.5, self ? 5 : 10, 10, self ? 10 : 5));
     msgLbl.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY,
         self ? new CornerRadii(5, 0, 5, 5, false) : new CornerRadii(0, 5, 5, 5, false),
@@ -310,11 +327,12 @@ public class ChatView extends VBox {
     //msgLbl.setWrapText(true);
     //msgLbl.setMinWidth(50);
 
+
     Label whoLbl = new Label(usernameFrom);
     Shape bubble = self ? Utils.createRightSpeechBubble() : Utils.createLeftSpeechBubble();
     //((SVGPath) bubble).setContent(self ? "M10 0 L0 10 L0 0 Z":"M0 0 L10 0 L10 10 Z");
 
-    msgLbl.shapeProperty().set(bubble);
+    //msgLbl.shapeProperty().set(bubble);
 
     HBox container = new HBox(msgLbl);
     //container.setStyle("-fx-background-color: red;-fx-border-color: black;");//DEBUG

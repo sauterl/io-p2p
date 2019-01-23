@@ -48,6 +48,8 @@ dependencies {
     // Markdown
     implementation "com.sandec:mdfx:0.1.1"
 
+    implementation 'com.atlassian.commonmark:commonmark:0.12.1'
+
 
     // Testing
     testImplementation group: 'junit', name: 'junit', version: '4.12'
