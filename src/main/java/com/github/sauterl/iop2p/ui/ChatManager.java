@@ -2,6 +2,7 @@ package com.github.sauterl.iop2p.ui;
 
 import com.github.sauterl.iop2p.IOUtils;
 import com.github.sauterl.iop2p.JSONUtils;
+import com.github.sauterl.iop2p.crypto.KeyStore;
 import com.github.sauterl.iop2p.data.ChatHistory;
 import com.github.sauterl.iop2p.data.Message;
 import com.github.sauterl.iop2p.ipfs.IPFSAdapter;
@@ -43,6 +44,7 @@ public class ChatManager implements ModifiableListHandler<String> {
   private ChatWindow view;
 
   private HashMap<String, Chat> chatHashMap = new HashMap<>();
+  private KeyStore keyStore = new KeyStore();
 
   private Chat activeChat;
 
@@ -54,6 +56,7 @@ public class ChatManager implements ModifiableListHandler<String> {
     theChatter.setOnMessageReceived(this::handleIncomingMessage);
     LOGGER.info("Our ID: {}", getOwnNodeId());
     LOGGER.debug("Addresses: {}", Arrays.toString(getOwnAddresses()));
+    // TODO Load keyStore
   }
 
   private void handleIncomingMessage(Message m) {
@@ -233,4 +236,10 @@ public class ChatManager implements ModifiableListHandler<String> {
     }
   }
 
+  public void addKeyLocationFor(String they, String keyLocation) {
+    // TODO Check if entry exists
+    keyStore.add(they, keyLocation);
+    keyStore.getEntry(they).ifPresent(activeChat::setKeystoreEntry);
+    LOGGER.debug("Added {}/{} to the keystore");
+  }
 }

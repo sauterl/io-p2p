@@ -161,6 +161,44 @@ public class Utils {
     return dialog;
   }
 
+  public static Dialog<String> createAndShowKeyLocationDialog(String user) {
+    Dialog<String> dialog = new Dialog<>();
+    dialog.setTitle("Add Key for " + user);
+    dialog.setHeaderText("Add the folder containing the public key for user: " + user);
+
+    // create Connect and Cancel button
+    ButtonType connectButtonType = new ButtonType("Add", ButtonData.OK_DONE);
+    dialog.getDialogPane().getButtonTypes().addAll(connectButtonType, ButtonType.CANCEL);
+
+    GridPane grid = new GridPane();
+    grid.setHgap(10);
+    grid.setVgap(10);
+    grid.setPadding(new Insets(20, 150, 10, 10));
+
+    // Display own ID
+    TextArea keyLocation = new TextArea();
+    keyLocation.setPromptText("Key Location");
+
+    grid.add(new Label("Key Location:"), 0, 0);
+    grid.add(keyLocation, 1, 0);
+
+    dialog.getDialogPane().setContent(grid);
+
+    dialog.setResultConverter(
+        connectBtn -> {
+          if (connectBtn == connectButtonType) {
+            if (!keyLocation.getText().isEmpty()) {
+              return keyLocation.getText();
+            }
+          }
+          return null;
+        });
+
+    dialog.showAndWait();
+
+    return dialog;
+  }
+
   public static class UserCredentials {
 
     private String ip;

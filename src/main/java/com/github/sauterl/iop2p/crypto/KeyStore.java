@@ -38,6 +38,10 @@ public class KeyStore {
     return keys.size();
   }
 
+  public Optional<Entry> getEntry(String they) {
+    return keys.stream().filter(entry -> entry.user.equals(they)).findFirst();
+  }
+
   /**
    * The actual entry which maps usernames and keystore location
    */

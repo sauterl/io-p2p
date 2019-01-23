@@ -1,6 +1,7 @@
 package com.github.sauterl.iop2p.ui;
 
 import static com.github.sauterl.iop2p.Utils.connectAlert;
+import static com.github.sauterl.iop2p.Utils.createAndShowKeyLocationDialog;
 
 import com.github.sauterl.iop2p.Utils.UserCredentials;
 import com.github.sauterl.iop2p.ui.components.ModifiableListView;
@@ -24,7 +25,6 @@ public class ChatWindow extends VBox {
   public static final double INITIAL_DIVIDER_POSITION = 0.4;
   private static final Logger LOGGER = LoggerFactory.getLogger(ChatWindow.class);
   private final ChatManager manager;
-  private ChatView activeChat;
   private VBox chatContainer;
   private ModifiableListView<String> list;
   private SplitPane splitPane;
@@ -34,10 +34,6 @@ public class ChatWindow extends VBox {
     manager = new ChatManager(this);
     initComponents();
     layoutComponents();
-  }
-
-  public ChatView getActiveChat() {
-    return activeChat;
   }
 
   public void setActiveChat(Chat chat) {
@@ -81,7 +77,8 @@ public class ChatWindow extends VBox {
     menuBar.getMenus().add(menu);
 
     MenuItem connect = new MenuItem("Connect");
-    menu.getItems().add(connect);
+
+    MenuItem addKeysMenuItem = new MenuItem("Add Key for Active User");
 
     connect.setOnAction(
         e -> {
@@ -94,6 +91,18 @@ public class ChatWindow extends VBox {
                   + "/ipfs/"
                   + dialog.getResult().getId());
         });
+
+
+    addKeysMenuItem.setOnAction(e -> {
+      Chat active = ((ChatView)chatContainer.getChildren().stream().filter(n -> n instanceof ChatView).findFirst().get()).getChat();
+        Dialog<String> dialog = createAndShowKeyLocationDialog(active.getThey());
+        if(dialog.getResult() != null && !dialog.getResult().isEmpty()){
+          manager.addKeyLocationFor(active.getThey(), dialog.getResult());
+
+        }
+    });
+
+    menu.getItems().addAll(connect,addKeysMenuItem);
   }
 
   void selectChat(String chat) {

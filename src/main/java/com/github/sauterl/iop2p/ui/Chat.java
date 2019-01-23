@@ -1,6 +1,8 @@
 package com.github.sauterl.iop2p.ui;
 
 import com.github.sauterl.iop2p.IOUtils;
+import com.github.sauterl.iop2p.crypto.KeyStore;
+import com.github.sauterl.iop2p.crypto.KeyStore.Entry;
 import com.github.sauterl.iop2p.data.ChatHistory;
 import com.github.sauterl.iop2p.data.Message;
 import com.github.sauterl.iop2p.net.Chatter;
@@ -26,6 +28,9 @@ public class Chat {
   private final Chatter chatter;
   private ChatHistory history;
 
+  private KeyStore.Entry keystoreEntry;
+
+  private boolean encrypted = false;
   private ChatView view;
 
   public Chat(final String they, final Chatter chatter) {
@@ -39,6 +44,15 @@ public class Chat {
       LOGGER.error("Error during history load", e);
       history = new ChatHistory(they);
     }
+  }
+
+  public Entry getKeystoreEntry() {
+    return keystoreEntry;
+  }
+
+  public void setKeystoreEntry(Entry keystoreEntry) {
+    this.keystoreEntry = keystoreEntry;
+    encrypted = true;
   }
 
   public ChatHistory getHistory() {
@@ -68,6 +82,11 @@ public class Chat {
   }
 
   public void send(Message m) {
+    LOGGER.debug("Security={}, sending: {}", encrypted, m);
+    sendMessage(m);
+  }
+
+  private void sendMessage(Message m) {
     try {
       chatter.send(m);
       LOGGER.debug("Successfully send message {}", m);
