@@ -4,10 +4,13 @@ import com.github.sauterl.iop2p.IOUtils;
 import com.github.sauterl.iop2p.JSONUtils;
 import com.github.sauterl.iop2p.data.ChatHistory;
 import com.github.sauterl.iop2p.data.Message;
+import com.github.sauterl.iop2p.ipfs.IPFSAdapter;
 import com.github.sauterl.iop2p.net.Chatter;
 import com.github.sauterl.iop2p.ui.components.ModifiableListHandler;
 import com.github.sauterl.iop2p.ui.components.ModifiableListView.AddEvent;
 import com.github.sauterl.iop2p.ui.components.ModifiableListView.RemoveEvent;
+import io.ipfs.api.IPFS;
+import io.ipfs.multiaddr.MultiAddress;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -49,6 +52,8 @@ public class ChatManager implements ModifiableListHandler<String> {
         SimpleGuiCommand.getInstance().getIpfs().pubsub);
     theChatter.start();
     theChatter.setOnMessageReceived(this::handleIncomingMessage);
+    LOGGER.info("Our ID: {}", getOwnNodeId());
+    LOGGER.debug("Addresses: {}", Arrays.toString(getOwnAddresses()));
   }
 
   private void handleIncomingMessage(Message m){
@@ -113,6 +118,7 @@ public class ChatManager implements ModifiableListHandler<String> {
     result.ifPresent(
         name -> {
           if(!chatHashMap.containsKey(name)){
+            addChat(name);
 
           }else{
             LOGGER.warn("For user {} already exists a chat", name);
@@ -122,7 +128,7 @@ public class ChatManager implements ModifiableListHandler<String> {
             alert.setContentText("Cannot have two chats to the same addressee");
             alert.showAndWait();
           }
-          view.getChatsList().getItems().add(name);
+
         });
   }
 
@@ -153,6 +159,7 @@ public class ChatManager implements ModifiableListHandler<String> {
       chatHashMap.put(they, new ChatView(they, theChatter).getChat());
       if(!view.getChatsList().getItems().contains(they)){
         view.getChatsList().getItems().add(they);
+        view.getChatsList().getListView().getSelectionModel().select(they);
       }
       return true;
     }else{
@@ -178,6 +185,49 @@ public class ChatManager implements ModifiableListHandler<String> {
       view.setActiveChat(activeChat);
       chatHashMap.values().forEach(c -> c.getView().setActive(false));
       activeChat.getView().setActive(true);
+    }
+  }
+
+  public void connectToNode(String other){
+    IPFSAdapter.getInstance().getCachedIPFS().ifPresent( ipfs -> {
+      try {
+        ipfs.swarm.connect(new MultiAddress(other));
+      } catch (IOException e) {
+        LOGGER.error("Couldn't connect to other.",e);
+      }
+    });
+  }
+
+  @SuppressWarnings("unchecked")
+  public String[] getOwnAddresses(){
+    Optional<IPFS> ipfs = IPFSAdapter.getInstance().getCachedIPFS();
+    if(ipfs.isPresent()){
+      try {
+        if(ipfs.get().id().containsKey("Addresses")){
+          return ((ArrayList<String>) ipfs.get().id().get("Addresses")).toArray(new String[0]);
+        }
+      } catch (IOException e) {
+        LOGGER.error("Couldn't retrieve own id", e);
+      }
+      return null;//ipfs.get().id();
+    }else{
+      return null;
+    }
+  }
+
+  public String getOwnNodeId(){
+    Optional<IPFS> ipfs = IPFSAdapter.getInstance().getCachedIPFS();
+    if(ipfs.isPresent()){
+      try {
+        if(ipfs.get().id().containsKey("ID")){
+          return (String) ipfs.get().id().get("ID");
+        }
+      } catch (IOException e) {
+        LOGGER.error("Couldn't retrieve own id", e);
+      }
+      return null;//ipfs.get().id();
+    }else{
+      return null;
     }
   }
 

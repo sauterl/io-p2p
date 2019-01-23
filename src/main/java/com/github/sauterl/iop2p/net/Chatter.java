@@ -99,4 +99,5 @@ public class Chatter {
   public String getUsername() {
     return username;
   }
+
 }
