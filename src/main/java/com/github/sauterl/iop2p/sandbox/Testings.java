@@ -10,16 +10,16 @@ import org.bouncycastle.crypto.InvalidCipherTextException;
  *
  * @author loris.sauter
  */
-@Command(name="sandbox", description = "Testing things out - quick and dirty")
-public class Testings implements Runnable{
+@Command(name = "sandbox", description = "Testing things out - quick and dirty")
+public class Testings implements Runnable {
 
 
   @Override
   public void run() {
     try {
       String enc = RSA.encrypt(RSA.loadKeyFromFile(".", true), "Hello World");
-      System.out.println("ENC: "+enc);
-      System.out.println(RSA.decrypt(RSA.loadKeyFromFile(".",false),enc));
+      System.out.println("ENC: " + enc);
+      System.out.println(RSA.decrypt(RSA.loadKeyFromFile(".", false), enc));
     } catch (IOException e) {
       e.printStackTrace();
     } catch (InvalidCipherTextException e) {

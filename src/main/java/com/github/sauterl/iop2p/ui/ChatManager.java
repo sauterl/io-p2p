@@ -56,21 +56,21 @@ public class ChatManager implements ModifiableListHandler<String> {
     LOGGER.debug("Addresses: {}", Arrays.toString(getOwnAddresses()));
   }
 
-  private void handleIncomingMessage(Message m){
-    LOGGER.debug("Incoming message: {}",m);
-    if(!m.getTargetUsername().equals(theChatter.getUsername())){
+  private void handleIncomingMessage(Message m) {
+    LOGGER.debug("Incoming message: {}", m);
+    if (!m.getTargetUsername().equals(theChatter.getUsername())) {
       // ignoring those chats not for us
       return;
     }
-    if(m.getSourceUsername().equals(activeChat.getThey())){
+    if (m.getSourceUsername().equals(activeChat.getThey())) {
       activeChat.receive(m);
-    }else if(chatHashMap.containsKey(m.getSourceUsername())) {
+    } else if (chatHashMap.containsKey(m.getSourceUsername())) {
       LOGGER.debug("Will switch active chat");
       Platform.runLater(() -> {
         chatHashMap.get(m.getSourceUsername()).receive(m);
         view.selectChat(m.getSourceUsername());
       });
-    }else{
+    } else {
       LOGGER.debug("Will create new chat");
 
       Platform.runLater(() -> {
@@ -90,19 +90,19 @@ public class ChatManager implements ModifiableListHandler<String> {
     String they = event.getSelected();
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
     alert.setTitle("Chat Deletion");
-    alert.setHeaderText("Delete chat with "+they);
-    alert.setContentText("Are you sure you want to delete the chat with "+they+"\n "
+    alert.setHeaderText("Delete chat with " + they);
+    alert.setContentText("Are you sure you want to delete the chat with " + they + "\n "
         + "Deletion cannot be undone and may cause loss of data");
     Optional<ButtonType> out = alert.showAndWait();
     out.ifPresent(buttonType -> {
-      if(buttonType.equals(ButtonType.OK)){
+      if (buttonType.equals(ButtonType.OK)) {
         view.getChatsList().getItems().remove(event.getSelectedIndex());
         try {
           IOUtils.deleteHistory(they);
         } catch (IOException e) {
-          LOGGER.error("Error while deleting history for "+they, e);
+          LOGGER.error("Error while deleting history for " + they, e);
         }
-      }else{
+      } else {
         // Noting
       }
     });
@@ -117,10 +117,10 @@ public class ChatManager implements ModifiableListHandler<String> {
     Optional<String> result = dialog.showAndWait();
     result.ifPresent(
         name -> {
-          if(!chatHashMap.containsKey(name)){
+          if (!chatHashMap.containsKey(name)) {
             addChat(name);
 
-          }else{
+          } else {
             LOGGER.warn("For user {} already exists a chat", name);
             Alert alert = new Alert(AlertType.WARNING);
             alert.setTitle("Duplicate Chat");
@@ -132,7 +132,7 @@ public class ChatManager implements ModifiableListHandler<String> {
         });
   }
 
-  public void stop(){
+  public void stop() {
     theChatter.stop();
     System.exit(0);
   }
@@ -143,7 +143,9 @@ public class ChatManager implements ModifiableListHandler<String> {
 
   public void loadExisitngChats() {
     Path path = Paths.get(IOUtils.getDirectory());
-    Arrays.stream(Objects.requireNonNull(path.toFile().listFiles((dir,filename)->filename.startsWith(IOUtils.HISTORY_PREFIX) && filename.endsWith(IOUtils.HISTORY_EXTENSION)))).forEach(f -> {
+    Arrays.stream(Objects.requireNonNull(path.toFile().listFiles(
+        (dir, filename) -> filename.startsWith(IOUtils.HISTORY_PREFIX) && filename
+            .endsWith(IOUtils.HISTORY_EXTENSION)))).forEach(f -> {
       try {
         ChatHistory chatHistory = JSONUtils.readFromJSONFile(f, ChatHistory.class);
         addChat(chatHistory);
@@ -154,23 +156,23 @@ public class ChatManager implements ModifiableListHandler<String> {
     view.getChatsList().getListView().getSelectionModel().select(0);
   }
 
-  private boolean addChat(String they){
-    if(!chatHashMap.containsKey(they)){
+  private boolean addChat(String they) {
+    if (!chatHashMap.containsKey(they)) {
       chatHashMap.put(they, new ChatView(they, theChatter).getChat());
-      if(!view.getChatsList().getItems().contains(they)){
+      if (!view.getChatsList().getItems().contains(they)) {
         view.getChatsList().getItems().add(they);
         view.getChatsList().getListView().getSelectionModel().select(they);
       }
       return true;
-    }else{
+    } else {
       return false;
     }
   }
 
-  private void addChat(ChatHistory history){
-    if(!chatHashMap.containsKey(history.getUser())){
+  private void addChat(ChatHistory history) {
+    if (!chatHashMap.containsKey(history.getUser())) {
       chatHashMap.put(history.getUser(), new ChatView(history.getUser(), theChatter).getChat());
-    }else{
+    } else {
       // Not sure whether needed
       Chat chat = chatHashMap.get(history.getUser());
       chat.setHistory(history);
@@ -179,7 +181,7 @@ public class ChatManager implements ModifiableListHandler<String> {
   }
 
   public void selectChat(String chat) {
-    if(chatHashMap.containsKey(chat)){
+    if (chatHashMap.containsKey(chat)) {
       LOGGER.debug("Selecting chat {}", chat);
       activeChat = chatHashMap.get(chat);
       view.setActiveChat(activeChat);
@@ -188,45 +190,45 @@ public class ChatManager implements ModifiableListHandler<String> {
     }
   }
 
-  public void connectToNode(String other){
-    IPFSAdapter.getInstance().getCachedIPFS().ifPresent( ipfs -> {
+  public void connectToNode(String other) {
+    IPFSAdapter.getInstance().getCachedIPFS().ifPresent(ipfs -> {
       try {
         ipfs.swarm.connect(new MultiAddress(other));
       } catch (IOException e) {
-        LOGGER.error("Couldn't connect to other.",e);
+        LOGGER.error("Couldn't connect to other.", e);
       }
     });
   }
 
   @SuppressWarnings("unchecked")
-  public String[] getOwnAddresses(){
+  public String[] getOwnAddresses() {
     Optional<IPFS> ipfs = IPFSAdapter.getInstance().getCachedIPFS();
-    if(ipfs.isPresent()){
+    if (ipfs.isPresent()) {
       try {
-        if(ipfs.get().id().containsKey("Addresses")){
+        if (ipfs.get().id().containsKey("Addresses")) {
           return ((ArrayList<String>) ipfs.get().id().get("Addresses")).toArray(new String[0]);
         }
       } catch (IOException e) {
         LOGGER.error("Couldn't retrieve own id", e);
       }
       return null;//ipfs.get().id();
-    }else{
+    } else {
       return null;
     }
   }
 
-  public String getOwnNodeId(){
+  public String getOwnNodeId() {
     Optional<IPFS> ipfs = IPFSAdapter.getInstance().getCachedIPFS();
-    if(ipfs.isPresent()){
+    if (ipfs.isPresent()) {
       try {
-        if(ipfs.get().id().containsKey("ID")){
+        if (ipfs.get().id().containsKey("ID")) {
           return (String) ipfs.get().id().get("ID");
         }
       } catch (IOException e) {
         LOGGER.error("Couldn't retrieve own id", e);
       }
       return null;//ipfs.get().id();
-    }else{
+    } else {
       return null;
     }
   }

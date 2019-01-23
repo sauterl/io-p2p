@@ -5,9 +5,6 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.swing.text.html.Option;
 
 /**
  * Custom map-alike class for holding username/rsa-key-pair-location entries.
@@ -21,30 +18,31 @@ public class KeyStore {
 
   private final ArrayList<Entry> keys = new ArrayList<>();
 
-  public List<Entry> getKeys(){
+  public List<Entry> getKeys() {
     return keys;
   }
 
 
-  public boolean add(String user, String keyLocation){
+  public boolean add(String user, String keyLocation) {
     return keys.add(new Entry(user, keyLocation));
   }
 
 
-  public Optional<String> get(String user){
+  public Optional<String> get(String user) {
     Optional<Entry> canditates = keys.stream().filter(entry -> entry.user.equals(user)).findFirst();
     return canditates.map(entry -> entry.keyLocation);
   }
 
   @JsonIgnore
-  public int size(){
+  public int size() {
     return keys.size();
   }
 
   /**
    * The actual entry which maps usernames and keystore location
    */
-  public static class Entry{
+  public static class Entry {
+
     private String user;
     private String keyLocation;
 

@@ -21,14 +21,12 @@ import org.slf4j.LoggerFactory;
  */
 public class ChatWindow extends VBox {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ChatWindow.class);
   public static final double INITIAL_DIVIDER_POSITION = 0.4;
-
+  private static final Logger LOGGER = LoggerFactory.getLogger(ChatWindow.class);
+  private final ChatManager manager;
   private ChatView activeChat;
   private VBox chatContainer;
   private ModifiableListView<String> list;
-
-  private final ChatManager manager;
   private SplitPane splitPane;
   private MenuBar menuBar;
 
@@ -42,11 +40,20 @@ public class ChatWindow extends VBox {
     return activeChat;
   }
 
+  public void setActiveChat(Chat chat) {
+    chatContainer.getChildren().clear();
+    chatContainer.getChildren().add(chat.getView());
+    chat.getView().prefHeightProperty().bind(chatContainer.heightProperty());
+    chat.getView().scrollDown();
+  }
+
   public ModifiableListView<String> getChatsList() {
     return list;
   }
 
-  /** Initializes the UI components and performs configuration of them */
+  /**
+   * Initializes the UI components and performs configuration of them
+   */
   private void initComponents() {
     splitPane = new SplitPane();
     splitPane.setOrientation(Orientation.HORIZONTAL);
@@ -66,6 +73,7 @@ public class ChatWindow extends VBox {
             });
     initMenu();
   }
+  // /ip4/ip/tcp/port/ipfs/partnerID
 
   private void initMenu() {
     menuBar = new MenuBar();
@@ -92,7 +100,9 @@ public class ChatWindow extends VBox {
     list.getListView().getSelectionModel().select(chat);
   }
 
-  /** Will setup the layout, e.g. the look and feel of this component */
+  /**
+   * Will setup the layout, e.g. the look and feel of this component
+   */
   private void layoutComponents() {
     getChildren().addAll(menuBar, splitPane);
 
@@ -102,13 +112,6 @@ public class ChatWindow extends VBox {
     splitPane.getItems().addAll(list, chatContainer);
 
     chatContainer.prefHeightProperty().bind(heightProperty());
-  }
-
-  public void setActiveChat(Chat chat) {
-    chatContainer.getChildren().clear();
-    chatContainer.getChildren().add(chat.getView());
-    chat.getView().prefHeightProperty().bind(chatContainer.heightProperty());
-    chat.getView().scrollDown();
   }
 
   public ChatManager getManager() {

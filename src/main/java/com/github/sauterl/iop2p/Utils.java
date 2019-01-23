@@ -75,43 +75,6 @@ public class Utils {
     return svgPath;
   }
 
-  public static class UserCredentials {
-
-    private String ip;
-    private int port;
-    private String id;
-
-    public UserCredentials(String ip, int port, String id) {
-      this.ip = ip;
-      this.port = port;
-      this.id = id;
-    }
-
-    public String getIp() {
-      return ip;
-    }
-
-    public void setIp(String ip) {
-      this.ip = ip;
-    }
-
-    public int getPort() {
-      return port;
-    }
-
-    public void setPort(int port) {
-      this.port = port;
-    }
-
-    public String getId() {
-      return id;
-    }
-
-    public void setId(String id) {
-      this.id = id;
-    }
-  }
-
   public static Dialog<UserCredentials> connectAlert(String[] addresses) {
     // Create login window
     Dialog<UserCredentials> dialog = new Dialog<>();
@@ -133,10 +96,10 @@ public class Utils {
     username.setEditable(false);
 
     StringBuilder stringBuilder = new StringBuilder();
-    Arrays.stream(addresses).forEach(a -> {stringBuilder.append(a).append("\n");});
+    Arrays.stream(addresses).forEach(a -> {
+      stringBuilder.append(a).append("\n");
+    });
     username.setText(stringBuilder.toString());
-
-
 
     // Enter partner IP
     TextField ipPartner = new TextField();
@@ -180,7 +143,7 @@ public class Utils {
         connectBtn -> {
           if (connectBtn == connectButtonType) {
             if ((ipPartner.getText().isEmpty()
-                    || numFieldPort.getText().isEmpty())
+                || numFieldPort.getText().isEmpty())
                 || partnerID.getText().isEmpty()) {
               return null;
             } else {
@@ -196,5 +159,42 @@ public class Utils {
     dialog.showAndWait();
 
     return dialog;
+  }
+
+  public static class UserCredentials {
+
+    private String ip;
+    private int port;
+    private String id;
+
+    public UserCredentials(String ip, int port, String id) {
+      this.ip = ip;
+      this.port = port;
+      this.id = id;
+    }
+
+    public String getIp() {
+      return ip;
+    }
+
+    public void setIp(String ip) {
+      this.ip = ip;
+    }
+
+    public int getPort() {
+      return port;
+    }
+
+    public void setPort(int port) {
+      this.port = port;
+    }
+
+    public String getId() {
+      return id;
+    }
+
+    public void setId(String id) {
+      this.id = id;
+    }
   }
 }

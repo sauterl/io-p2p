@@ -9,11 +9,10 @@ import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 /**
  * RSA based en- and decryption of messages.
  *
- * Requires 'our' private key to encrypt the message and
- * 'their' public key.
+ * Requires 'our' private key to encrypt the message and 'their' public key.
  *
- * There is the requirement that public keys are stored at the specified location as textfield with the name 'public-key',
- * Private key as 'private-key'
+ * There is the requirement that public keys are stored at the specified location as textfield with
+ * the name 'public-key', Private key as 'private-key'
  *
  * @author loris.sauter
  */
@@ -29,7 +28,7 @@ public class RsaProcessor {
 
   public EncryptedMessage encrypt(Message m) throws InvalidCipherTextException {
     EncryptedMessage enc = new EncryptedMessage();
-    enc.setPayload( RSA.encrypt(theirKey, m.getPayload()));
+    enc.setPayload(RSA.encrypt(theirKey, m.getPayload()));
     return enc;
   }
 

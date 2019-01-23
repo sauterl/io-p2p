@@ -39,15 +39,15 @@ public class Chatter {
                   try {
                     LOGGER.debug("Waiting for message");
                     Message m = getNextMessage();
-                    LOGGER.debug("Msg: {}",m);
+                    LOGGER.debug("Msg: {}", m);
                     newMessageConsumer.accept(m);
                   } catch (InterruptedException e) {
                     e.printStackTrace();
                     break;
                   }
-                }else{
-                  if(System.currentTimeMillis() % 1000 == 0){
-                    LOGGER.debug("Consumer: {}",hasNewMessageConsumer());
+                } else {
+                  if (System.currentTimeMillis() % 1000 == 0) {
+                    LOGGER.debug("Consumer: {}", hasNewMessageConsumer());
                   }
                 }
               }
@@ -79,9 +79,6 @@ public class Chatter {
 
   /**
    * Should be blocking
-   *
-   * @return
-   * @throws InterruptedException
    */
   public Message getNextMessage() throws InterruptedException {
     return receiver.getNextMessage();

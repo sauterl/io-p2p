@@ -18,14 +18,14 @@ import java.util.Base64;
  * @author loris.sauter
  */
 @Command(name = "key-gen", description = "Generate key-pair for usage with iop2p")
-public class KeyGen implements Runnable{
+public class KeyGen implements Runnable {
 
 
   public static final String PUBLIC_KEY = "public-key";
   public static final String PRIVATE_KEY = "private-key";
 
   @Required
-  @Option(name={"-o", "--output"}, description = "Path to write the key files to")
+  @Option(name = {"-o", "--output"}, description = "Path to write the key files to")
   private String outputPath;
 
   @Override
@@ -38,11 +38,13 @@ public class KeyGen implements Runnable{
 
       Base64.Encoder b64Enc = Base64.getEncoder();
 
-      String publicKeyFilename = Paths.get(outputPath, "/", PUBLIC_KEY).toFile().getAbsolutePath(); // TODO Extract constants
-      String privateKeyFilename = Paths.get(outputPath, "/", PRIVATE_KEY).toFile().getAbsolutePath();
+      String publicKeyFilename = Paths.get(outputPath, "/", PUBLIC_KEY).toFile()
+          .getAbsolutePath(); // TODO Extract constants
+      String privateKeyFilename = Paths.get(outputPath, "/", PRIVATE_KEY).toFile()
+          .getAbsolutePath();
 
-      System.out.println("Pub: "+publicKeyFilename);
-      System.out.println("Priv: "+privateKeyFilename);
+      System.out.println("Pub: " + publicKeyFilename);
+      System.out.println("Priv: " + privateKeyFilename);
 
       SecureRandom random = SecureRandom.getInstanceStrong();
       generator.initialize(1024, random);
@@ -51,16 +53,16 @@ public class KeyGen implements Runnable{
       Key pubKey = pair.getPublic();
       Key privKey = pair.getPrivate();
 
-      String puk =  b64Enc.encodeToString(pubKey.getEncoded());
+      String puk = b64Enc.encodeToString(pubKey.getEncoded());
       String pik = b64Enc.encodeToString(privKey.getEncoded());
-      System.out.println("publicKey : " +puk);
+      System.out.println("publicKey : " + puk);
       System.out.println(PRIVATE_KEY + "Key : " + pik);
 
       Utils.writeFileContents(publicKeyFilename, puk);
 
       Utils.writeFileContents(privateKeyFilename, pik);
-    }catch(Throwable t){
-       // Ignore // TODO Proper exception handling!
+    } catch (Throwable t) {
+      // Ignore // TODO Proper exception handling!
     }
   }
 

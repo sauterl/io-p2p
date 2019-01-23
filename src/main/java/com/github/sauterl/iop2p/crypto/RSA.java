@@ -1,7 +1,6 @@
 package com.github.sauterl.iop2p.crypto;
 
 import com.github.sauterl.iop2p.Utils;
-import io.ipfs.multibase.Multibase.Base;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.security.Security;
@@ -71,7 +70,8 @@ public class RSA {
 
     Base64.Decoder dec = Base64.getDecoder();
 
-    byte[] encodedBytes = e.processBlock(dec.decode(encryptedMsg), 0, dec.decode(encryptedMsg).length);
+    byte[] encodedBytes = e
+        .processBlock(dec.decode(encryptedMsg), 0, dec.decode(encryptedMsg).length);
     return new String(encodedBytes);
 
   }

@@ -16,29 +16,31 @@ import java.util.concurrent.ExecutionException;
 @Command(name = "simplegui")
 public class SimpleGuiCommand extends AbstractCommand {
 
-  @Option(title="User name", name={"-u", "--user"})
+  private static SimpleGuiCommand instance = null;
+  @Option(title = "User name", name = {"-u", "--user"})
   @Required
   private String username;
-
-  @Option(title="Keystore file", name={"-k", "--keystore"})
+  @Option(title = "Keystore file", name = {"-k", "--keystore"})
   private String keystoreFile;
+  private IPFS ipfs;
+
+  public SimpleGuiCommand() {
+    super();
+    instance = this;
+  }
+
+  public static SimpleGuiCommand getInstance() {
+    return instance;
+  }
 
   public String getUsername() {
     return username;
-  }
-
-  private static SimpleGuiCommand instance = null;
-
-  public SimpleGuiCommand(){
-    super();
-    instance = this;
   }
 
   public IPFS getIpfs() {
     return ipfs;
   }
 
-  private IPFS ipfs;
   @Override
   public void execute() {
     //LaunchHelper<ChatAppl> launchHelper = new LaunchHelper<>(ChatAppl.class);
@@ -54,9 +56,5 @@ public class SimpleGuiCommand extends AbstractCommand {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-  }
-
-  public static SimpleGuiCommand getInstance() {
-    return instance;
   }
 }

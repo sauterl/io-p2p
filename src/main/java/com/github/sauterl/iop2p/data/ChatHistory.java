@@ -1,13 +1,12 @@
 package com.github.sauterl.iop2p.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A chat history with a specific user.
- * Usually a chat history consists of the messages exchanged with that user.
+ * A chat history with a specific user. Usually a chat history consists of the messages exchanged
+ * with that user.
  *
  * @author loris.sauter
  */

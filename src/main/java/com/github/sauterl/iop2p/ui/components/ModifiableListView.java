@@ -1,16 +1,19 @@
 package com.github.sauterl.iop2p.ui.components;
 
+import java.util.ArrayList;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventType;
 import javafx.geometry.Insets;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
+import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Tooltip;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Region;
-
-import java.util.ArrayList;
 
 /**
  * Class to represent a {@link ListView} which has a title and buttons to add / remove items.
@@ -19,16 +22,11 @@ import java.util.ArrayList;
  */
 public class ModifiableListView<T> extends BorderPane {
 
-  public ListView<T> getListView() {
-    return listView;
-  }
+  protected ModifiableListController<T> controller = null;
 
   // TODO Allow custom styling
-
-  protected ModifiableListController<T> controller = null;
   protected ListView<T> listView = new ListView();
   private ArrayList<ModifiableListHandler<T>> handlers = new ArrayList<>();
-
   public ModifiableListView(String title) {
     super();
     initComponents(title, listView);
@@ -40,6 +38,10 @@ public class ModifiableListView<T> extends BorderPane {
     this(title);
     this.controller = controller;
     listView.setItems(controller.getItems());
+  }
+
+  public ListView<T> getListView() {
+    return listView;
   }
 
   public void addHandler(ModifiableListHandler<T> handler) {
@@ -125,7 +127,9 @@ public class ModifiableListView<T> extends BorderPane {
   }
 
   public static class RemoveEvent<T> extends ActionEvent {
-    public static final EventType<RemoveEvent> REMOVE = new EventType<>(ActionEvent.ACTION, "remove");
+
+    public static final EventType<RemoveEvent> REMOVE = new EventType<>(ActionEvent.ACTION,
+        "remove");
     private T selected;
     private int index;
 
@@ -151,10 +155,9 @@ public class ModifiableListView<T> extends BorderPane {
 
   /**
    * Rather a flag event
-   *
-   * @param <T>
    */
   public static class AddEvent<T> extends ActionEvent {
+
     public static final EventType<AddEvent> ADD = new EventType<>(ActionEvent.ACTION, "add");
 
     public AddEvent(ActionEvent source) {

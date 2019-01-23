@@ -6,6 +6,7 @@ package com.github.sauterl.iop2p.ui.components;
  * @author loris.sauter
  */
 public interface ModifiableListHandler<T> {
+
   void onRemove(ModifiableListView.RemoveEvent<T> event);
 
   void onAdd(ModifiableListView.AddEvent<T> event);

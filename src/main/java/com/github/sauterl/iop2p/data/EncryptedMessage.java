@@ -7,12 +7,12 @@ package com.github.sauterl.iop2p.data;
  */
 public class EncryptedMessage extends Message {
 
-  public EncryptedMessage(){
+  public EncryptedMessage() {
     super();
     type = MessageType.ENCRYPTED;
   }
 
-  public EncryptedMessage(Message m){
+  public EncryptedMessage(Message m) {
     setSourceUsername(m.getSourceUsername());
     setTargetUsername(m.getTargetUsername());
     setTimestamp(m.getTimestamp());

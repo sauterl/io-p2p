@@ -27,7 +27,7 @@ public class IPFSAdapter {
 
   // TODO Cleanup
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(IPFSAdapter.class);
+  public static final String IPFS_DAEMON_COMMAND = "daemon";
   /*
   Notes:
   This class shall
@@ -38,17 +38,17 @@ public class IPFSAdapter {
 
    Later: IPFS init and stuff as well
    */
-
-  public static final String IPFS_DAEMON_COMMAND = "daemon";
   public static final String IPFS_INIT_COMMAND = "init";
   public static final String ENABLE_PUBSUB_FLAG = "--enable-pubsub-experiment";
   public static final String IPFS_ENVIRONMENT_VARIABLE = "IPFS_PATH";
+  private final static Logger LOGGER = LoggerFactory.getLogger(IPFSAdapter.class);
+  private static IPFSAdapter instance = null;
   private final IPFSDaemon daemon;
+  private final Thread daemonThread;
   private FutureTask<IPFS> futureTask;
   private String ipfsExecPath;
   private String ipfsRepo = "./ipfs-repo/"; // Default
-  private final Thread daemonThread;
-
+  private IPFS ipfs = null;
 
   private IPFSAdapter(String ipfsExecPath, String ipfsRepo) {
     this.ipfsExecPath = ipfsExecPath;
@@ -68,12 +68,10 @@ public class IPFSAdapter {
     LOGGER.trace("Created IPFS Adapter");
   }
 
-  private static IPFSAdapter instance = null;
-
-  public static IPFSAdapter getInstance(){
-    if(instance != null){
+  public static IPFSAdapter getInstance() {
+    if (instance != null) {
       return instance;
-    }else{
+    } else {
       throw new IllegalStateException("Wasn't initialized yet. Call create(string, string) before");
     }
   }
@@ -89,14 +87,12 @@ public class IPFSAdapter {
     futureTask.cancel(true);
   }
 
-  private IPFS ipfs = null;
-
   public IPFS ipfs() throws ExecutionException, InterruptedException {
-    ipfs =  futureTask.get();
+    ipfs = futureTask.get();
     return ipfs;
   }
 
-  public Optional<IPFS> getCachedIPFS(){
+  public Optional<IPFS> getCachedIPFS() {
     return ipfs != null ? Optional.of(ipfs) : Optional.empty();
   }
 
@@ -147,10 +143,10 @@ public class IPFSAdapter {
           createAndExecuteIpfsDaemon();
         }
       } catch (InterruptedException e) {
-        if(!stopped){
+        if (!stopped) {
 
           e.printStackTrace();
-        }else{
+        } else {
           // Gracefull stop, all good
         }
       } catch (TimeoutException e) {

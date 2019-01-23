@@ -24,10 +24,8 @@ public class Receiver implements Runnable {
   private BlockingQueue<Message> messages = new ArrayBlockingQueue<>(1000);
 
 
-
-
   public Receiver(String topic, Pubsub pubsub) {
-    System.out.println("Receiving at "+topic);
+    System.out.println("Receiving at " + topic);
     this.topic = topic;
     this.pubsub = pubsub;
   }
@@ -43,11 +41,11 @@ public class Receiver implements Runnable {
                   String rawMsg = parseRaw((String) msg.get("data"));
                   LOGGER.trace("Received raw: {}", rawMsg);
                   Optional<Message> prsdMsg = parse(rawMsg);
-                  if(prsdMsg.isPresent()){
+                  if (prsdMsg.isPresent()) {
                     Message actual = prsdMsg.get();
-                    LOGGER.debug("Received Message: {}",actual);
+                    LOGGER.debug("Received Message: {}", actual);
                     messages.add(actual);
-                  }else{
+                  } else {
                     LOGGER.warn("Received non-valid message: {}", rawMsg);
                   }
                 } catch (Base64DecodingException | IOException e) {
@@ -64,10 +62,10 @@ public class Receiver implements Runnable {
   }
 
   private Optional<Message> parse(String msg) throws IOException {
-    try{
+    try {
       Message m = om.readValue(msg, Message.class);
       return Optional.of(m);
-    }catch(JsonMappingException | JsonParseException e){
+    } catch (JsonMappingException | JsonParseException e) {
       return Optional.empty();
     }
   }

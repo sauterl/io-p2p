@@ -14,11 +14,11 @@ public class LaunchHelper<T extends Application> {
   private volatile boolean running = false;
   private Thread fxLauncher;
 
-  public LaunchHelper(Class<T> launchClass){
+  public LaunchHelper(Class<T> launchClass) {
     this.launchClass = launchClass;
   }
 
-  public synchronized void launch(){
+  public synchronized void launch() {
     fxLauncher = new Thread(() -> {
       Thread.currentThread().setName("FXLauncher");
       running = true;
@@ -28,14 +28,13 @@ public class LaunchHelper<T extends Application> {
     fxLauncher.start();
   }
 
-  public boolean isRunning(){
-    return  running;
+  public boolean isRunning() {
+    return running;
   }
 
-  public void stop(){
+  public void stop() {
     fxLauncher.interrupt();
   }
-
 
 
 }

@@ -33,17 +33,14 @@ public class Experiments {
     StringBuilder sb = new StringBuilder();
     List<String> l = br.lines().collect(Collectors.toCollection(ArrayList::new));
     l.remove(0);
-    l.remove(l.size()-1);
+    l.remove(l.size() - 1);
     l.forEach(sb::append);
 
-
     String key = sb.toString();
-
 
     Base64.Decoder dec = Base64.getDecoder();
     AsymmetricKeyParameter privateKey =
         PrivateKeyFactory.createKey(dec.decode(key));
-
 
     AsymmetricBlockCipher e = new RSAEngine();
     e = new org.bouncycastle.crypto.encodings.PKCS1Encoding(e);
