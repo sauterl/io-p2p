@@ -301,7 +301,7 @@ public class ChatView extends VBox {
     Label dateLbl = new Label(time);
     Label msgLbl = new Label(message.getPayload());
     msgLbl.setAlignment(self ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
-    msgLbl.setPadding(new Insets(2.5, self ? 5 : 10, 10, self ? 10 : 5)  );
+    msgLbl.setPadding(new Insets(2.5, self ? 5 : 10, 10, self ? 10 : 5));
     msgLbl.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY,
         self ? new CornerRadii(5, 0, 5, 5, false) : new CornerRadii(0, 5, 5, 5, false),
         Insets.EMPTY)));
@@ -348,11 +348,11 @@ public class ChatView extends VBox {
   }
 
 
-  public void scrollDown(){
+  public void scrollDown() {
     scrollPane.setVvalue(scrollPane.getVmax());
   }
 
-  public void setActive(boolean active){
+  public void setActive(boolean active) {
     sendBtn.setDefaultButton(active);
   }
 }

@@ -19,13 +19,18 @@ public class SimpleClient implements Runnable {
   private volatile boolean running = true;
   private Chatter chatter;
 
-  public SimpleClient(String multiaddr, String username){
+  public SimpleClient(String multiaddr, String username) {
     this.username = username;
     ipfs = new IPFS(multiaddr);
     chatter = new Chatter(username, ipfs.pubsub);
   }
 
-  public void run(){
+  public static void main(String[] args) {
+    new Thread(new SimpleClient(args[0], args[1])).start();
+    ;
+  }
+
+  public void run() {
     Scanner scanner = new Scanner(System.in);
     Thread incoming = new Thread(() -> {
       Message msg = null;
@@ -36,32 +41,30 @@ public class SimpleClient implements Runnable {
       }
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
       Date d = new Date(msg.getTimestamp());
-      System.out.println(String.format("%s wrote on %s:\n\t%s", msg.getSourceUsername(), sdf.format(d), msg.getPayload()));
+      System.out.println(String
+          .format("%s wrote on %s:\n\t%s", msg.getSourceUsername(), sdf.format(d),
+              msg.getPayload()));
     });
     incoming.start();
-    while(running){
+    while (running) {
       String line = scanner.nextLine();
-      if(line.equalsIgnoreCase("q")){
+      if (line.equalsIgnoreCase("q")) {
         running = false;
-      }else{
+      } else {
         String[] components = line.split(":");
-        if(components.length >= 2){
+        if (components.length >= 2) {
           try {
             chatter.send(components[0], components[1]);
           } catch (Exception e) {
             e.printStackTrace();
           }
-        }else{
+        } else {
           System.err.println("Chat via <username>:<message> ENTER.");
         }
       }
     }
     incoming.interrupt();
 
-  }
-
-  public static void main(String[] args) {
-    new Thread(new SimpleClient(args[0], args[1])).start();;
   }
 
 }

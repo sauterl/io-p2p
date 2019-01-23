@@ -21,7 +21,7 @@ public class P2PChatApplication extends Application {
     Thread.setDefaultUncaughtExceptionHandler(this::handleUncaughtException);
 
     ChatWindow window = new ChatWindow();
-    primaryStage.setScene(new Scene(window, 800,600));
+    primaryStage.setScene(new Scene(window, 800, 600));
     primaryStage.setTitle("peer-text-peer -- IPFS based Chat");
 
     window.getManager().loadExisitngChats();
@@ -37,6 +37,6 @@ public class P2PChatApplication extends Application {
   }
 
   private void handleUncaughtException(Thread thread, Throwable throwable) {
-    LOGGER.error("Uncaught Exception.",throwable);
+    LOGGER.error("Uncaught Exception.", throwable);
   }
 }

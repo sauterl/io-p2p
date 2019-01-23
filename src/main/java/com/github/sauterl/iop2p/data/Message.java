@@ -6,11 +6,11 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 public class Message {
 
 
+  protected MessageType type = MessageType.PLAIN;
   private long timestamp = System.currentTimeMillis();
   private String payload;
   private String sourceUsername;
   private String targetUsername;
-  protected MessageType type = MessageType.PLAIN;
 
   public Message() {
   }

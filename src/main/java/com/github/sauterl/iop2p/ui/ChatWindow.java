@@ -1,15 +1,16 @@
 package com.github.sauterl.iop2p.ui;
 
+import static com.github.sauterl.iop2p.Utils.connectAlert;
+
+import com.github.sauterl.iop2p.Utils.UserCredentials;
 import com.github.sauterl.iop2p.ui.components.ModifiableListView;
 import javafx.geometry.Orientation;
-import javafx.scene.Scene;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
-import javafx.scene.input.KeyCode;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,27 +19,32 @@ import org.slf4j.LoggerFactory;
  *
  * @author loris.sauter
  */
-public class ChatWindow extends HBox {
+public class ChatWindow extends VBox {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(ChatWindow.class);
   public static final double INITIAL_DIVIDER_POSITION = 0.4;
-
+  private static final Logger LOGGER = LoggerFactory.getLogger(ChatWindow.class);
+  private final ChatManager manager;
   private ChatView activeChat;
   private VBox chatContainer;
   private ModifiableListView<String> list;
-
-  private final ChatManager manager;
   private SplitPane splitPane;
+  private MenuBar menuBar;
 
-  public ChatWindow(){
+  public ChatWindow() {
     manager = new ChatManager(this);
     initComponents();
     layoutComponents();
-
   }
 
   public ChatView getActiveChat() {
     return activeChat;
+  }
+
+  public void setActiveChat(Chat chat) {
+    chatContainer.getChildren().clear();
+    chatContainer.getChildren().add(chat.getView());
+    chat.getView().prefHeightProperty().bind(chatContainer.heightProperty());
+    chat.getView().scrollDown();
   }
 
   public ModifiableListView<String> getChatsList() {
@@ -48,7 +54,7 @@ public class ChatWindow extends HBox {
   /**
    * Initializes the UI components and performs configuration of them
    */
-  private void initComponents(){
+  private void initComponents() {
     splitPane = new SplitPane();
     splitPane.setOrientation(Orientation.HORIZONTAL);
     splitPane.setDividerPositions(INITIAL_DIVIDER_POSITION);
@@ -57,22 +63,48 @@ public class ChatWindow extends HBox {
 
     list = new ModifiableListView<>("Chats");
     list.addHandler(manager);
-    list.getListView().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-      LOGGER.debug("Selected chat {}", newValue);
-      manager.selectChat(newValue);
-    });
+    list.getListView()
+        .getSelectionModel()
+        .selectedItemProperty()
+        .addListener(
+            (observable, oldValue, newValue) -> {
+              LOGGER.debug("Selected chat {}", newValue);
+              manager.selectChat(newValue);
+            });
+    initMenu();
+  }
+  // /ip4/ip/tcp/port/ipfs/partnerID
+
+  private void initMenu() {
+    menuBar = new MenuBar();
+    Menu menu = new Menu("Menu");
+    menuBar.getMenus().add(menu);
+
+    MenuItem connect = new MenuItem("Connect");
+    menu.getItems().add(connect);
+
+    connect.setOnAction(
+        e -> {
+          Dialog<UserCredentials> dialog = connectAlert(manager.getOwnAddresses());
+          manager.connectToNode(
+              "/ip4/"
+                  + dialog.getResult().getIp()
+                  + "/tcp/"
+                  + dialog.getResult().getPort()
+                  + "/ipfs/"
+                  + dialog.getResult().getId());
+        });
   }
 
-  void selectChat(String chat){
+  void selectChat(String chat) {
     list.getListView().getSelectionModel().select(chat);
   }
 
   /**
    * Will setup the layout, e.g. the look and feel of this component
    */
-  private void layoutComponents(){
-    getChildren().add(splitPane);
-
+  private void layoutComponents() {
+    getChildren().addAll(menuBar, splitPane);
 
     splitPane.prefHeightProperty().bind(heightProperty());
     splitPane.prefWidthProperty().bind(widthProperty());
@@ -80,13 +112,6 @@ public class ChatWindow extends HBox {
     splitPane.getItems().addAll(list, chatContainer);
 
     chatContainer.prefHeightProperty().bind(heightProperty());
-  }
-
-  public void setActiveChat(Chat chat){
-    chatContainer.getChildren().clear();
-    chatContainer.getChildren().add(chat.getView());
-    chat.getView().prefHeightProperty().bind(chatContainer.heightProperty());
-    chat.getView().scrollDown();
   }
 
   public ChatManager getManager() {

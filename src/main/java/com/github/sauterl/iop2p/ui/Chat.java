@@ -36,7 +36,7 @@ public class Chat {
     try {
       load();
     } catch (IOException e) {
-      LOGGER.error("Error during history load",e);
+      LOGGER.error("Error during history load", e);
       history = new ChatHistory(they);
     }
   }
@@ -67,16 +67,16 @@ public class Chat {
     return they;
   }
 
-  public void send(Message m){
+  public void send(Message m) {
     try {
       chatter.send(m);
-      LOGGER.debug("Successfully send message {}",m);
+      LOGGER.debug("Successfully send message {}", m);
     } catch (Exception e) {
-      LOGGER.error("An error occurred during send.",e);
+      LOGGER.error("An error occurred during send.", e);
     }
   }
 
-  public void receive(Message m){
+  public void receive(Message m) {
     LOGGER.debug("Receiving message {}", m);
     Platform.runLater(() -> {
       view.getMessages().add(m);
@@ -85,9 +85,9 @@ public class Chat {
 
   public void load() throws IOException {
     Path p = Paths.get(IOUtils.getHistoryFile(they));
-    if(Files.exists(p)){
+    if (Files.exists(p)) {
       history = IOUtils.loadHistory(they);
-    }else{
+    } else {
       history = new ChatHistory(they);
     }
   }

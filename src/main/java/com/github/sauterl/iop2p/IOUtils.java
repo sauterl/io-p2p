@@ -27,19 +27,19 @@ public class IOUtils {
     return path;
   }
 
-  public static String getHistoryFile(String user){
-    return Paths.get(getDirectory(), HISTORY_PREFIX+user+HISTORY_EXTENSION).toString();
+  public static String getHistoryFile(String user) {
+    return Paths.get(getDirectory(), HISTORY_PREFIX + user + HISTORY_EXTENSION).toString();
   }
 
   public static void deleteHistory(String user) throws IOException {
     Path path = Paths.get(getHistoryFile(user));
     Files.delete(path);
-    LOGGER.info("Removed history at {}",path);
+    LOGGER.info("Removed history at {}", path);
   }
 
   public static void saveHistory(ChatHistory history) throws IOException {
     Path path = Paths.get(getHistoryFile(history.getUser()));
-    JSONUtils.writeToJSONFile(history,path.toFile());
+    JSONUtils.writeToJSONFile(history, path.toFile());
     LOGGER.info("Wrote history at {}", path);
   }
 

@@ -1,9 +1,8 @@
 package com.github.sauterl.iop2p.ui.components;
 
+import java.util.ArrayList;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-
-import java.util.ArrayList;
 
 /**
  * Abstract controller for the {@link ModifiableListView}
