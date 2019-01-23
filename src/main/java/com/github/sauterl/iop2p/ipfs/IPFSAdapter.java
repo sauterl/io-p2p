@@ -2,6 +2,7 @@ package com.github.sauterl.iop2p.ipfs;
 
 import io.ipfs.api.IPFS;
 import java.io.IOException;
+import java.util.Optional;
 import java.util.Vector;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -67,8 +68,19 @@ public class IPFSAdapter {
     LOGGER.trace("Created IPFS Adapter");
   }
 
+  private static IPFSAdapter instance = null;
+
+  public static IPFSAdapter getInstance(){
+    if(instance != null){
+      return instance;
+    }else{
+      throw new IllegalStateException("Wasn't initialized yet. Call create(string, string) before");
+    }
+  }
+
   public static IPFSAdapter create(String ipfsExecPath, String ipfsRepo) {
-    return new IPFSAdapter(ipfsExecPath, ipfsRepo);
+    instance = new IPFSAdapter(ipfsExecPath, ipfsRepo);
+    return instance;
   }
 
   public void close() {
@@ -77,8 +89,15 @@ public class IPFSAdapter {
     futureTask.cancel(true);
   }
 
+  private IPFS ipfs = null;
+
   public IPFS ipfs() throws ExecutionException, InterruptedException {
-    return futureTask.get();
+    ipfs =  futureTask.get();
+    return ipfs;
+  }
+
+  public Optional<IPFS> getCachedIPFS(){
+    return ipfs != null ? Optional.of(ipfs) : Optional.empty();
   }
 
   private static class OnCallProcessDestroyer implements ProcessDestroyer {
