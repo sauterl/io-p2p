@@ -2,9 +2,14 @@ package com.github.sauterl.iop2p.ui;
 
 import com.github.sauterl.iop2p.ui.components.ModifiableListView;
 import javafx.geometry.Orientation;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.SplitPane;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +34,7 @@ public class ChatWindow extends HBox {
     manager = new ChatManager(this);
     initComponents();
     layoutComponents();
+
   }
 
   public ChatView getActiveChat() {
