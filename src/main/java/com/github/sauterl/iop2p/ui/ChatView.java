@@ -330,7 +330,7 @@ public class ChatView extends VBox {
     //dateMessage.setStyle("-fx-background-color: blue;-fx-border-color: black;");
 
     wrapper.getChildren().setAll(dateMessage);
-
+    wrapper.setPadding(new Insets(5));
     return wrapper;
   }
 
@@ -347,4 +347,12 @@ public class ChatView extends VBox {
     return chat;
   }
 
+
+  public void scrollDown(){
+    scrollPane.setVvalue(scrollPane.getVmax());
+  }
+
+  public void setActive(boolean active){
+    sendBtn.setDefaultButton(active);
+  }
 }

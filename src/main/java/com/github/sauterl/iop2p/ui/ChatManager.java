@@ -176,6 +176,8 @@ public class ChatManager implements ModifiableListHandler<String> {
       LOGGER.debug("Selecting chat {}", chat);
       activeChat = chatHashMap.get(chat);
       view.setActiveChat(activeChat);
+      chatHashMap.values().forEach(c -> c.getView().setActive(false));
+      activeChat.getView().setActive(true);
     }
   }
 

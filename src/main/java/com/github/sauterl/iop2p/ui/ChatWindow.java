@@ -80,6 +80,7 @@ public class ChatWindow extends HBox {
     chatContainer.getChildren().clear();
     chatContainer.getChildren().add(chat.getView());
     chat.getView().prefHeightProperty().bind(chatContainer.heightProperty());
+    chat.getView().scrollDown();
   }
 
   public ChatManager getManager() {
