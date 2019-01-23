@@ -1,7 +1,12 @@
 package com.github.sauterl.iop2p.ui;
 
+import static com.github.sauterl.iop2p.Utils.connectAlert;
+
 import com.github.sauterl.iop2p.ui.components.ModifiableListView;
 import javafx.geometry.Orientation;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -13,7 +18,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author loris.sauter
  */
-public class ChatWindow extends HBox {
+public class ChatWindow extends VBox {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ChatWindow.class);
   public static final double INITIAL_DIVIDER_POSITION = 0.4;
@@ -24,6 +29,7 @@ public class ChatWindow extends HBox {
 
   private final ChatManager manager;
   private SplitPane splitPane;
+  private MenuBar menuBar;
 
   public ChatWindow(){
     manager = new ChatManager(this);
@@ -55,6 +61,20 @@ public class ChatWindow extends HBox {
       LOGGER.debug("Selected chat {}", newValue);
       manager.selectChat(newValue);
     });
+    initMenu();
+  }
+
+  private void initMenu(){
+    menuBar = new MenuBar();
+    Menu menu = new Menu("Menu");
+    menuBar.getMenus().add(menu);
+
+    MenuItem connect = new MenuItem("Connect");
+    menu.getItems().add(connect);
+
+    connect.setOnAction(e -> {
+      connectAlert();
+    });
   }
 
   void selectChat(String chat){
@@ -65,8 +85,7 @@ public class ChatWindow extends HBox {
    * Will setup the layout, e.g. the look and feel of this component
    */
   private void layoutComponents(){
-    getChildren().add(splitPane);
-
+    getChildren().addAll(menuBar, splitPane);
 
     splitPane.prefHeightProperty().bind(heightProperty());
     splitPane.prefWidthProperty().bind(widthProperty());
