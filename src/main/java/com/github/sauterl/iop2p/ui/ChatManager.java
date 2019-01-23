@@ -118,6 +118,7 @@ public class ChatManager implements ModifiableListHandler<String> {
     result.ifPresent(
         name -> {
           if(!chatHashMap.containsKey(name)){
+            addChat(name);
 
           }else{
             LOGGER.warn("For user {} already exists a chat", name);
@@ -127,7 +128,7 @@ public class ChatManager implements ModifiableListHandler<String> {
             alert.setContentText("Cannot have two chats to the same addressee");
             alert.showAndWait();
           }
-          view.getChatsList().getItems().add(name);
+
         });
   }
 
@@ -158,6 +159,7 @@ public class ChatManager implements ModifiableListHandler<String> {
       chatHashMap.put(they, new ChatView(they, theChatter).getChat());
       if(!view.getChatsList().getItems().contains(they)){
         view.getChatsList().getItems().add(they);
+        view.getChatsList().getListView().getSelectionModel().select(they);
       }
       return true;
     }else{
