@@ -23,4 +23,9 @@ public class EncryptedMessage extends Message {
     m.setPayload(message.getPayload());
     return m;
   }
+
+  @Override
+  public MessageType getType() {
+    return MessageType.ENCRYPTED;
+  }
 }

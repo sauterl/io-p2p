@@ -10,6 +10,5 @@ public enum MessageType {
 
   PLAIN,
   ENCRYPTED,
-  IMAGE,
   FILE
 }

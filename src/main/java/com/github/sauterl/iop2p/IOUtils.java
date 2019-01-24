@@ -9,12 +9,28 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sun.security.provider.SHA;
 
 public class IOUtils {
 
   public static final Logger LOGGER = LoggerFactory.getLogger(IOUtils.class);
 
   public static final String HOME = "iop2p";
+
+  public static final String DOWNLOADS = "downloads";
+  public static final String SHARED = "shared";
+
+  public static Path getDownloadDir(){
+    Path p = Paths.get(getDirectory(), DOWNLOADS);
+    p.toFile().mkdirs();
+    return p;
+  }
+
+  public static Path getPublishDir(){
+    Path p = Paths.get(getDirectory(), SHARED);
+    p.toFile().mkdirs();
+    return p;
+  }
 
   public static final String HISTORY_PREFIX = "history-";
   public static final String HISTORY_EXTENSION = ".json";

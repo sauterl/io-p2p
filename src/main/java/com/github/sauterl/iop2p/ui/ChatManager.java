@@ -12,6 +12,7 @@ import com.github.sauterl.iop2p.ui.components.ModifiableListView.AddEvent;
 import com.github.sauterl.iop2p.ui.components.ModifiableListView.RemoveEvent;
 import io.ipfs.api.IPFS;
 import io.ipfs.multiaddr.MultiAddress;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -257,6 +258,12 @@ public class ChatManager implements ModifiableListHandler<String> {
     } else {
       return null;
     }
+  }
+
+  public void test(){
+    IPFSAdapter.getInstance().getCachedIPFS().ifPresent(ipfs -> {
+
+    });
   }
 
 
