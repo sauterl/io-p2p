@@ -19,24 +19,17 @@ public class Markdown extends AbstractVisitor {
   // TODO handle nested formats
 
   private static final Logger LOGGER = LoggerFactory.getLogger(Markdown.class);
-  private FormatType activeNode = FormatType.PLAIN;
-  private List<javafx.scene.text.Text> list = new ArrayList<>();
   private static Font italicFont;
   private static Font boldFont;
   private static Font monoFont;
+  private FormatType activeNode = FormatType.PLAIN;
+  private List<javafx.scene.text.Text> list = new ArrayList<>();
 
   {
     Font font = Font.getDefault();
     italicFont = Font.font("Arial", FontPosture.ITALIC, font.getSize());
     boldFont = Font.font("Arial", FontWeight.BOLD, font.getSize());
     monoFont = Font.font("Courier", font.getSize());
-  }
-
-  private enum FormatType {
-    EMPHASIS,
-    STRONG_EMPHASIS,
-    CODE,
-    PLAIN
   }
 
   // emphasis
@@ -66,6 +59,7 @@ public class Markdown extends AbstractVisitor {
     visitChildren(code);
     activeNode = FormatType.PLAIN;
   }
+
   // text
   @Override
   public void visit(Text text) {
@@ -92,12 +86,19 @@ public class Markdown extends AbstractVisitor {
     }
     javafx.scene.text.Text t = new javafx.scene.text.Text(text.getLiteral());
     t.setStyle(style);
-    LOGGER.debug("Visit Text: Active={}, literal={}", activeNode,text.getLiteral());
-    //t.setFont(font); // not working, apparently
+    LOGGER.debug("Visit Text: Active={}, literal={}", activeNode, text.getLiteral());
+    // t.setFont(font); // not working, apparently
     list.add(t);
   }
 
   public TextFlow getTextflow() {
     return new TextFlow(list.toArray(new javafx.scene.text.Text[0]));
+  }
+
+  private enum FormatType {
+    EMPHASIS,
+    STRONG_EMPHASIS,
+    CODE,
+    PLAIN
   }
 }

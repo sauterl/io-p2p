@@ -22,7 +22,7 @@ public class SimpleClient implements Runnable {
   public SimpleClient(String multiaddr, String username) {
     this.username = username;
     ipfs = new IPFS(multiaddr);
-    chatter = new Chatter(username, ipfs.pubsub);
+    chatter = new Chatter(username, ipfs.pubsub, false);
   }
 
   public static void main(String[] args) {
@@ -32,19 +32,22 @@ public class SimpleClient implements Runnable {
 
   public void run() {
     Scanner scanner = new Scanner(System.in);
-    Thread incoming = new Thread(() -> {
-      Message msg = null;
-      try {
-        msg = chatter.getNextMessage();
-      } catch (InterruptedException e) {
-        e.printStackTrace();
-      }
-      SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
-      Date d = new Date(msg.getTimestamp());
-      System.out.println(String
-          .format("%s wrote on %s:\n\t%s", msg.getSourceUsername(), sdf.format(d),
-              msg.getPayload()));
-    });
+    Thread incoming =
+        new Thread(
+            () -> {
+              Message msg = null;
+              try {
+                msg = chatter.getNextMessage();
+              } catch (InterruptedException e) {
+                e.printStackTrace();
+              }
+              SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd G 'at' HH:mm:ss z");
+              Date d = new Date(msg.getTimestamp());
+              System.out.println(
+                  String.format(
+                      "%s wrote on %s:\n\t%s",
+                      msg.getSourceUsername(), sdf.format(d), msg.getPayload()));
+            });
     incoming.start();
     while (running) {
       String line = scanner.nextLine();
@@ -64,7 +67,5 @@ public class SimpleClient implements Runnable {
       }
     }
     incoming.interrupt();
-
   }
-
 }

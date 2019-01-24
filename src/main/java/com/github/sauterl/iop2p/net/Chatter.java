@@ -24,9 +24,13 @@ public class Chatter {
 
   private Consumer<Message> newMessageConsumer = null;
 
-  public Chatter(String username, Pubsub pubsub) {
+  public Chatter(String username, Pubsub pubsub, boolean broadcaster) {
     this.username = username;
-    receiver = new Receiver(Utils.getUsernameInboxTopic(username), pubsub);
+    if (broadcaster) {
+      receiver = new Receiver(Utils.getInboxTopicBroadcast(), pubsub);
+    } else {
+      receiver = new Receiver(Utils.getUsernameInboxTopic(username), pubsub);
+    }
     sender = new Sender(pubsub);
     receiverThred = new Thread(receiver);
     receiverThred.setName("ReceiverThread");
@@ -40,7 +44,9 @@ public class Chatter {
                     LOGGER.debug("Waiting for message");
                     Message m = getNextMessage();
                     LOGGER.debug("Msg: {}", m);
-                    newMessageConsumer.accept(m);
+                    if (!broadcaster || !m.getSourceUsername().equals(username)) {
+                      newMessageConsumer.accept(m);
+                    }
                   } catch (InterruptedException e) {
                     e.printStackTrace();
                     break;
@@ -77,9 +83,7 @@ public class Chatter {
     msgHandlerThread.start();
   }
 
-  /**
-   * Should be blocking
-   */
+  /** Should be blocking */
   public Message getNextMessage() throws InterruptedException {
     return receiver.getNextMessage();
   }
@@ -96,5 +100,4 @@ public class Chatter {
   public String getUsername() {
     return username;
   }
-
 }

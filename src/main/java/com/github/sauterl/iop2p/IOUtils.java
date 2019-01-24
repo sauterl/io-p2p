@@ -60,6 +60,16 @@ public class IOUtils {
     LOGGER.info("Wrote history at {}", path);
   }
 
+  public static void saveBroadcastHistory(ChatHistory history) throws IOException {
+    Path path = getBroadgast();
+    JSONUtils.writeToJSONFile(history, path.toFile());
+    LOGGER.info("Wrote broadcast history at {}", path);
+  }
+
+  public static Path getBroadgast() {
+    return Paths.get(getDirectory(), "broadcast.json");
+  }
+
   public static ChatHistory loadHistory(String user) throws IOException {
     Path path = Paths.get(getHistoryFile(user));
     ChatHistory history = JSONUtils.readFromJSONFile(path.toFile(), ChatHistory.class);
@@ -80,7 +90,7 @@ public class IOUtils {
     return store;
   }
 
-  public static boolean hasKeyStore(){
+  public static boolean hasKeyStore() {
     return Files.exists(getKeystorePath());
   }
 
@@ -88,9 +98,7 @@ public class IOUtils {
     return Paths.get(getDirectory(), "keystore.json");
   }
 
-  public static Path getOurKeyLocation(){
+  public static Path getOurKeyLocation() {
     return Paths.get(getDirectory(), "my-keys/");
   }
-
-
 }

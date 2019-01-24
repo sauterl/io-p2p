@@ -10,5 +10,6 @@ public enum MessageType {
 
   PLAIN,
   ENCRYPTED,
-  FILE
+  FILE,
+  BROADCAST
 }

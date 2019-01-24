@@ -6,8 +6,8 @@ import javafx.collections.ObservableList;
 
 /**
  * Abstract controller for the {@link ModifiableListView}
- * <p>
- * Handles the adding and removing of elements.
+ *
+ * <p>Handles the adding and removing of elements.
  *
  * @author loris.sauter
  */
@@ -15,9 +15,7 @@ public abstract class ModifiableListController<T> implements ModifiableListHandl
 
   private ObservableList<T> items = FXCollections.observableList(new ArrayList<T>());
 
-  public ModifiableListController() {
-
-  }
+  public ModifiableListController() {}
 
   public ObservableList<T> getItems() {
     return items;
@@ -54,7 +52,5 @@ public abstract class ModifiableListController<T> implements ModifiableListHandl
     items.add(createNew());
   }
 
-
   protected abstract T createNew();
-
 }

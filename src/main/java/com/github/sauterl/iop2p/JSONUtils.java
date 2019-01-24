@@ -15,8 +15,9 @@ import java.io.IOException;
 public class JSONUtils {
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
-  private static final ObjectWriter WRITER = OBJECT_MAPPER.writer()
-      .with(SerializationFeature.INDENT_OUTPUT);
+  private static final ObjectWriter WRITER =
+      OBJECT_MAPPER.writer().with(SerializationFeature.INDENT_OUTPUT);
+
   private JSONUtils() {
     // no objects
   }
@@ -55,5 +56,4 @@ public class JSONUtils {
   public static <T> T readFromJSONFile(File file, Class<T> clazz) throws IOException {
     return OBJECT_MAPPER.readValue(file, clazz);
   }
-
 }

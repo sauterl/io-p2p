@@ -41,7 +41,7 @@ public class IPFSAdapter {
   public static final String IPFS_INIT_COMMAND = "init";
   public static final String ENABLE_PUBSUB_FLAG = "--enable-pubsub-experiment";
   public static final String IPFS_ENVIRONMENT_VARIABLE = "IPFS_PATH";
-  private final static Logger LOGGER = LoggerFactory.getLogger(IPFSAdapter.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(IPFSAdapter.class);
   private static IPFSAdapter instance = null;
   private final IPFSDaemon daemon;
   private final Thread daemonThread;
@@ -56,12 +56,13 @@ public class IPFSAdapter {
     daemon = new IPFSDaemon(ipfsExecPath, ipfsRepo);
     daemonThread = new Thread(daemon);
     daemonThread.start();
-    Callable<IPFS> callable = () -> {
-      while (daemon.getApiAddress() == null) {
-        Thread.sleep(1000);
-      }
-      return new IPFS(daemon.getApiAddress());
-    };
+    Callable<IPFS> callable =
+        () -> {
+          while (daemon.getApiAddress() == null) {
+            Thread.sleep(1000);
+          }
+          return new IPFS(daemon.getApiAddress());
+        };
     futureTask = new FutureTask<>(callable);
     ExecutorService executorService = Executors.newFixedThreadPool(4);
     executorService.execute(futureTask);
@@ -99,7 +100,6 @@ public class IPFSAdapter {
   private static class OnCallProcessDestroyer implements ProcessDestroyer {
 
     private final Vector<Process> processes = new Vector<>();
-
 
     @Override
     public boolean add(Process process) {
@@ -154,7 +154,6 @@ public class IPFSAdapter {
       } catch (IOException e) {
         e.printStackTrace();
       }
-
     }
 
     public String getApiAddress() {
@@ -171,41 +170,48 @@ public class IPFSAdapter {
       stopped = true;
     }
 
-
-    private boolean executeIpfsDaemon()
-        throws InterruptedException, TimeoutException, IOException {
+    private boolean executeIpfsDaemon() throws InterruptedException, TimeoutException, IOException {
       final boolean[] success = {false};
 
-      new ProcessExecutor().command(path, IPFS_DAEMON_COMMAND, ENABLE_PUBSUB_FLAG).redirectOutput(
-          new org.zeroturnaround.exec.stream.LogOutputStream() {
-            @Override
-            protected void processLine(String line) {
-              LOGGER.debug("Daemon: {}", line);
-              if (line.contains("Error: no IPFS repo found")) {
-                success[0] = false;
-              }
-              if (line.contains("API")) {
-                success[0] = true;
-                api = line;
-              }
-            }
-          }).environment(IPFS_ENVIRONMENT_VARIABLE, repo)
-          .addDestroyer(ShutdownHookProcessDestroyer.INSTANCE).addDestroyer(destroyer)
+      new ProcessExecutor()
+          .command(path, IPFS_DAEMON_COMMAND, ENABLE_PUBSUB_FLAG)
+          .redirectOutput(
+              new org.zeroturnaround.exec.stream.LogOutputStream() {
+                @Override
+                protected void processLine(String line) {
+                  LOGGER.debug("Daemon: {}", line);
+                  if (line.contains("Error: no IPFS repo found")) {
+                    success[0] = false;
+                  }
+                  if (line.contains("API")) {
+                    success[0] = true;
+                    api = line;
+                  }
+                }
+              })
+          .environment(IPFS_ENVIRONMENT_VARIABLE, repo)
+          .addDestroyer(ShutdownHookProcessDestroyer.INSTANCE)
+          .addDestroyer(destroyer)
           .execute();
       return success[0];
     }
 
     private boolean createAndExecuteIpfsDaemon()
         throws InterruptedException, TimeoutException, IOException {
-      ProcessResult result = new ProcessExecutor().command(path, IPFS_INIT_COMMAND)
-          .addDestroyer(ShutdownHookProcessDestroyer.INSTANCE).addDestroyer(destroyer)
-          .redirectOutput(
-              new org.zeroturnaround.exec.stream.LogOutputStream() {
-                @Override
-                protected void processLine(String line) {
-                  LOGGER.debug("Init: {}", line);
-                }
-              }).environment(IPFS_ENVIRONMENT_VARIABLE, repo).execute();
+      ProcessResult result =
+          new ProcessExecutor()
+              .command(path, IPFS_INIT_COMMAND)
+              .addDestroyer(ShutdownHookProcessDestroyer.INSTANCE)
+              .addDestroyer(destroyer)
+              .redirectOutput(
+                  new org.zeroturnaround.exec.stream.LogOutputStream() {
+                    @Override
+                    protected void processLine(String line) {
+                      LOGGER.debug("Init: {}", line);
+                    }
+                  })
+              .environment(IPFS_ENVIRONMENT_VARIABLE, repo)
+              .execute();
       if (result.getExitValue() == 0) {
         return executeIpfsDaemon();
       } else {
@@ -213,7 +219,4 @@ public class IPFSAdapter {
       }
     }
   }
-
-
 }
-

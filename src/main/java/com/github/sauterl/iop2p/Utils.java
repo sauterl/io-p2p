@@ -39,6 +39,10 @@ public class Utils {
     return "/iop2pchat/inbox/" + username;
   }
 
+  public static String getInboxTopicBroadcast() {
+    return "/iop2pchat/channel/broadcast";
+  }
+
   public static String readFileContents(String path) throws FileNotFoundException {
     StringBuilder sb = new StringBuilder();
 
@@ -96,9 +100,11 @@ public class Utils {
     username.setEditable(false);
 
     StringBuilder stringBuilder = new StringBuilder();
-    Arrays.stream(addresses).forEach(a -> {
-      stringBuilder.append(a).append("\n");
-    });
+    Arrays.stream(addresses)
+        .forEach(
+            a -> {
+              stringBuilder.append(a).append("\n");
+            });
     username.setText(stringBuilder.toString());
 
     // Enter partner IP
@@ -142,8 +148,7 @@ public class Utils {
     dialog.setResultConverter(
         connectBtn -> {
           if (connectBtn == connectButtonType) {
-            if ((ipPartner.getText().isEmpty()
-                || numFieldPort.getText().isEmpty())
+            if ((ipPartner.getText().isEmpty() || numFieldPort.getText().isEmpty())
                 || partnerID.getText().isEmpty()) {
               return null;
             } else {

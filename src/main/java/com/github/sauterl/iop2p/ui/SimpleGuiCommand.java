@@ -17,11 +17,18 @@ import java.util.concurrent.ExecutionException;
 public class SimpleGuiCommand extends AbstractCommand {
 
   private static SimpleGuiCommand instance = null;
-  @Option(title = "User name", name = {"-u", "--user"})
+
+  @Option(
+      title = "User name",
+      name = {"-u", "--user"})
   @Required
   private String username;
-  @Option(title = "Keystore file", name = {"-k", "--keystore"})
+
+  @Option(
+      title = "Keystore file",
+      name = {"-k", "--keystore"})
   private String keystoreFile;
+
   private IPFS ipfs;
 
   public SimpleGuiCommand() {
@@ -43,7 +50,7 @@ public class SimpleGuiCommand extends AbstractCommand {
 
   @Override
   public void execute() {
-    //LaunchHelper<ChatAppl> launchHelper = new LaunchHelper<>(ChatAppl.class);
+    // LaunchHelper<ChatAppl> launchHelper = new LaunchHelper<>(ChatAppl.class);
     LaunchHelper<P2PChatApplication> launchHelper = new LaunchHelper<>(P2PChatApplication.class);
     try {
       IPFSAdapter adapter = IPFSAdapter.create(getIpfsExecutable(), getIpfsRepo());

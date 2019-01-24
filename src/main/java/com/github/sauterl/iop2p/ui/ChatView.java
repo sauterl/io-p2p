@@ -1,6 +1,7 @@
 package com.github.sauterl.iop2p.ui;
 
 import com.github.sauterl.iop2p.Utils;
+import com.github.sauterl.iop2p.data.BroadcastMessage;
 import com.github.sauterl.iop2p.data.EncryptedMessage;
 import com.github.sauterl.iop2p.data.Message;
 import com.github.sauterl.iop2p.data.MessageType;
@@ -36,9 +37,7 @@ import org.commonmark.parser.Parser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * A ChatView is the view of the chat. It provides all necessary UI features for the chat.
- */
+/** A ChatView is the view of the chat. It provides all necessary UI features for the chat. */
 public class ChatView extends VBox {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(ChatView.class);
@@ -49,10 +48,8 @@ public class ChatView extends VBox {
   private TextField inputTextfield;
   private ScrollPane scrollPane;
 
-
   public ChatView(String they, Chatter chatter) {
     this(new Chat(they, chatter));
-
   }
 
   public ChatView(Chat chat) {
@@ -72,41 +69,45 @@ public class ChatView extends VBox {
   }
 
   private void initInteraction() {
-    sendBtn.setOnAction(event -> {
-      String message = inputTextfield.getText();
-      inputTextfield.clear();
-      Message m = new Message();
-      m.setSourceUsername(chat.getUs());
-      m.setTargetUsername(chat.getThey());
-      m.setTimestamp(System.currentTimeMillis());
-      m.setPayload(message);
-      Message toAdd = chat.send(m);
-      messages.add(m);
-    });
+    sendBtn.setOnAction(
+        event -> {
+          String message = inputTextfield.getText();
+          inputTextfield.clear();
+          Message m = new Message();
+          if (chat.isBroadcaster()) {
+            m = new BroadcastMessage();
+          }
+          m.setSourceUsername(chat.getUs());
+          m.setTargetUsername(chat.getThey());
+          m.setTimestamp(System.currentTimeMillis());
+          m.setPayload(message);
+          Message toAdd = chat.send(m);
+          messages.add(m);
+        });
   }
 
   private void initMessageHandling() {
     messages = FXCollections.observableList(chat.getHistory().getMessages());
-    messages.addListener((ListChangeListener<? super Message>) c -> {
-      if (!c.next()) {
-        return;
-      }
-      if (c.wasAdded()) {
-        c.getAddedSubList().forEach(this::displayChatMessage);
-      } else {
-        LOGGER.error("Unexpected state. Change on messages: {}", c);
-      }
-      try {
-        chat.save();
-      } catch (IOException e) {
-        LOGGER.error("Error during save of history", e);
-      }
-    });
+    messages.addListener(
+        (ListChangeListener<? super Message>)
+            c -> {
+              if (!c.next()) {
+                return;
+              }
+              if (c.wasAdded()) {
+                c.getAddedSubList().forEach(this::displayChatMessage);
+              } else {
+                LOGGER.error("Unexpected state. Change on messages: {}", c);
+              }
+              try {
+                chat.save();
+              } catch (IOException e) {
+                LOGGER.error("Error during save of history", e);
+              }
+            });
   }
 
-  /**
-   * Will setup the layout, e.g. the look and feel of this component
-   */
+  /** Will setup the layout, e.g. the look and feel of this component */
   private void layoutComponents() {
     scrollPane = new ScrollPane();
     scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
@@ -120,36 +121,36 @@ public class ChatView extends VBox {
 
     inputContainer.prefWidthProperty().bind(widthProperty());
     scrollPane.prefWidthProperty().bind(widthProperty());
-    scrollPane.prefHeightProperty()
+    scrollPane
+        .prefHeightProperty()
         .bind(heightProperty().subtract(inputContainer.prefHeightProperty()));
 
     getChildren().addAll(scrollPane, inputContainer);
   }
 
-  /**
-   * Initializes the UI components and performs configuration of them
-   */
+  /** Initializes the UI components and performs configuration of them */
   private void initComponents() {
     messagesBox = new VBox();
     inputTextfield = new TextField();
     inputTextfield.setPromptText("Enter your message here");
     sendBtn = new Button("Send"); // TODO Iconize
     sendBtn.setDefaultButton(true);
-
-
   }
 
   private void displayChatMessage(Message message) {
     if (message.getType() == MessageType.PLAIN) {
       messagesBox.getChildren().add(createSpeechBubbleDisplayV3(message, false));
-    } else if(message.getType() == MessageType.ENCRYPTED) {
-      chat.decrypt(EncryptedMessage.of(message)).ifPresent(dec -> {
-        LOGGER.debug("Decrypted message {}",dec);
-        messagesBox.getChildren().add(createSpeechBubbleDisplayV3(message, true));
-      });
+    } else if (message.getType() == MessageType.ENCRYPTED) {
+      chat.decrypt(EncryptedMessage.of(message))
+          .ifPresent(
+              dec -> {
+                LOGGER.debug("Decrypted message {}", dec);
+                messagesBox.getChildren().add(createSpeechBubbleDisplayV3(message, true));
+              });
 
-    }else{
-      // TODO switch on type
+    } else if (message.getType() == MessageType.BROADCAST) {
+      BroadcastMessage msg = new BroadcastMessage(message);
+      messagesBox.getChildren().add(createSpeechBubbleDisplayV3(msg, false));
     }
   }
 
@@ -183,7 +184,7 @@ public class ChatView extends VBox {
         .append(usernameTo)
         .append(": ")
         .append(messageText);
-// For markdown rendering
+    // For markdown rendering
     getStylesheets().add("/com/sandec/mdfx/mdfx-default.css");
     return new MDFXNode(stringBuilder.toString());
   }
@@ -243,7 +244,6 @@ public class ChatView extends VBox {
     pane.prefWidthProperty().bind(messagesBox.widthProperty());
     return wrapper;
   }
-
 
   private Node createSpeechBubbleDisplayV2(Message message) {
     // extract timestamp
@@ -324,35 +324,40 @@ public class ChatView extends VBox {
     if(self){
       msgLbl.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
     }
-    //msgLbl.setAlignment(self ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
+    // msgLbl.setAlignment(self ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
     msgLbl.setPadding(new Insets(2.5, self ? 5 : 10, 10, self ? 10 : 5));
-    msgLbl.setBackground(new Background(new BackgroundFill(Color.LIGHTGRAY,
-        self ? new CornerRadii(5, 0, 5, 5, false) : new CornerRadii(0, 5, 5, 5, false),
-        Insets.EMPTY)));
-    //msgLbl.setWrapText(true);
-    //msgLbl.setMinWidth(50);
-
+    msgLbl.setBackground(
+        new Background(
+            new BackgroundFill(
+                Color.LIGHTGRAY,
+                self ? new CornerRadii(5, 0, 5, 5, false) : new CornerRadii(0, 5, 5, 5, false),
+                Insets.EMPTY)));
+    // msgLbl.setWrapText(true);
+    // msgLbl.setMinWidth(50);
 
     Label whoLbl = new Label(usernameFrom);
     Shape bubble = self ? Utils.createRightSpeechBubble() : Utils.createLeftSpeechBubble();
-    //((SVGPath) bubble).setContent(self ? "M10 0 L0 10 L0 0 Z":"M0 0 L10 0 L10 10 Z");
+    // ((SVGPath) bubble).setContent(self ? "M10 0 L0 10 L0 0 Z":"M0 0 L10 0 L10 10 Z");
 
-    //msgLbl.shapeProperty().set(bubble);
+    // msgLbl.shapeProperty().set(bubble);
 
     HBox container = new HBox(msgLbl);
-    //container.setStyle("-fx-background-color: red;-fx-border-color: black;");//DEBUG
+    // container.setStyle("-fx-background-color: red;-fx-border-color: black;");//DEBUG
     container.setAlignment(self ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
     container.maxWidthProperty().bind(wrapper.widthProperty().multiply(.75));
 
     wrapper.setAlignment(self ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
 
-    //wrapper.setStyle("-fx-background-color: green;-fx-border-color: black;");
+    // wrapper.setStyle("-fx-background-color: green;-fx-border-color: black;");
 
     VBox dateMessage = new VBox();
     dateMessage.getChildren().addAll(container, dateLbl);
+    if (message instanceof BroadcastMessage) {
+      dateMessage.getChildren().add(new Label(message.getSourceUsername()));
+    }
     dateMessage.setAlignment(self ? Pos.TOP_RIGHT : Pos.TOP_LEFT);
 
-    //dateMessage.setStyle("-fx-background-color: blue;-fx-border-color: black;");
+    // dateMessage.setStyle("-fx-background-color: blue;-fx-border-color: black;");
 
     wrapper.getChildren().setAll(dateMessage);
     wrapper.setPadding(new Insets(5));
@@ -371,7 +376,6 @@ public class ChatView extends VBox {
   public Chat getChat() {
     return chat;
   }
-
 
   public void scrollDown() {
     scrollPane.setVvalue(scrollPane.getVmax());
