@@ -1,5 +1,6 @@
 package com.github.sauterl.iop2p.sandbox;
 
+import com.github.sauterl.iop2p.JSONUtils;
 import com.github.sauterl.iop2p.data.FileMessage;
 import com.github.sauterl.iop2p.ipfs.FileExchange;
 import com.github.sauterl.iop2p.ipfs.IPFSAdapter;
@@ -19,6 +20,7 @@ public class Experiments {
     FileExchange exhange = new FileExchange(adapter.ipfs());
     try {
       FileMessage m = exhange.publishFile(new File("helloworld.txt"));
+      System.out.println(JSONUtils.toJSON(m));
       File f = exhange.loadPublishedFile(m);
       System.out.println(f);
     } catch (IOException e) {

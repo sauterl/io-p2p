@@ -12,7 +12,6 @@ import com.github.sauterl.iop2p.ui.components.ModifiableListView.AddEvent;
 import com.github.sauterl.iop2p.ui.components.ModifiableListView.RemoveEvent;
 import io.ipfs.api.IPFS;
 import io.ipfs.multiaddr.MultiAddress;
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -55,15 +54,15 @@ public class ChatManager implements ModifiableListHandler<String> {
     view = chatWindow;
     theChatter =
         new Chatter(
-            SimpleGuiCommand.getInstance().getUsername(),
-            SimpleGuiCommand.getInstance().getIpfs().pubsub,
+            ChatGuiCommand.getInstance().getUsername(),
+            ChatGuiCommand.getInstance().getIpfs().pubsub,
             false);
     theChatter.start();
     theChatter.setOnMessageReceived(this::handleIncomingMessage);
     broadcastChatter =
         new Chatter(
-            SimpleGuiCommand.getInstance().getUsername(),
-            SimpleGuiCommand.getInstance().getIpfs().pubsub,
+            ChatGuiCommand.getInstance().getUsername(),
+            ChatGuiCommand.getInstance().getIpfs().pubsub,
             true);
     broadcastChatter.start();
     broadcastChatter.setOnMessageReceived(this::handleIncomingMessage);
