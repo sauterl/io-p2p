@@ -239,7 +239,9 @@ public class ChatManager implements ModifiableListHandler<String> {
     if (!chatHashMap.containsKey(history.getUser())) {
       ChatView view = new ChatView(history.getUser(), theChatter);
       Chat chat = view.getChat();
-      chat.setBroadcast();
+      if(history.isBroadcast()){
+        chat.setBroadcast();
+      }
       chatHashMap.put(history.getUser(), chat);
     } else {
       // Not sure whether needed
