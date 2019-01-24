@@ -13,6 +13,7 @@ import com.github.sauterl.iop2p.ui.components.ModifiableListView.RemoveEvent;
 import io.ipfs.api.IPFS;
 import io.ipfs.multiaddr.MultiAddress;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -31,7 +32,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Class to handle general incoming messages and multiple chats at once
  *
- * General managing instance of the application ui
+ * <p>General managing instance of the application ui
  *
  * @author loris.sauter
  */
@@ -40,6 +41,7 @@ public class ChatManager implements ModifiableListHandler<String> {
   private static final Logger LOGGER = LoggerFactory.getLogger(ChatManager.class);
 
   private final Chatter theChatter;
+  private final Chatter broadcastChatter;
   private ArrayList<String> others = new ArrayList<>();
   private ChatWindow view;
 
@@ -50,28 +52,40 @@ public class ChatManager implements ModifiableListHandler<String> {
 
   public ChatManager(ChatWindow chatWindow) {
     view = chatWindow;
-    theChatter = new Chatter(SimpleGuiCommand.getInstance().getUsername(),
-        SimpleGuiCommand.getInstance().getIpfs().pubsub);
+    theChatter =
+        new Chatter(
+            SimpleGuiCommand.getInstance().getUsername(),
+            SimpleGuiCommand.getInstance().getIpfs().pubsub,
+            false);
     theChatter.start();
     theChatter.setOnMessageReceived(this::handleIncomingMessage);
+    broadcastChatter =
+        new Chatter(
+            SimpleGuiCommand.getInstance().getUsername(),
+            SimpleGuiCommand.getInstance().getIpfs().pubsub,
+            true);
+    broadcastChatter.start();
+    broadcastChatter.setOnMessageReceived(this::handleIncomingMessage);
     LOGGER.info("Our ID: {}", getOwnNodeId());
     LOGGER.debug("Addresses: {}", Arrays.toString(getOwnAddresses()));
-
   }
 
-  public void loadAndInitSecurityModule(){
-    if(IOUtils.hasKeyStore()){
+  public void loadAndInitSecurityModule() {
+    if (IOUtils.hasKeyStore()) {
       try {
         keyStore = IOUtils.loadKeystore();
       } catch (IOException e) {
-        LOGGER.error("Could'nt load keystore",e);
+        LOGGER.error("Could'nt load keystore", e);
       }
     }
-    keyStore.entries().forEach(e -> {
-      if(chatHashMap.containsKey(e.getUser())){
-        chatHashMap.get(e.getUser()).setKeystoreEntry(e);
-      }
-    });
+    keyStore
+        .entries()
+        .forEach(
+            e -> {
+              if (chatHashMap.containsKey(e.getUser())) {
+                chatHashMap.get(e.getUser()).setKeystoreEntry(e);
+              }
+            });
     LOGGER.debug("Loaded keys where possible");
   }
 
@@ -85,24 +99,24 @@ public class ChatManager implements ModifiableListHandler<String> {
       activeChat.receive(m);
     } else if (chatHashMap.containsKey(m.getSourceUsername())) {
       LOGGER.debug("Will switch active chat");
-      Platform.runLater(() -> {
-        chatHashMap.get(m.getSourceUsername()).receive(m);
-        view.selectChat(m.getSourceUsername());
-      });
+      Platform.runLater(
+          () -> {
+            chatHashMap.get(m.getSourceUsername()).receive(m);
+            view.selectChat(m.getSourceUsername());
+          });
     } else {
       LOGGER.debug("Will create new chat");
 
-      Platform.runLater(() -> {
-        LOGGER.debug("Creating new chat for {}", m.getSourceUsername());
-        addChat(m.getSourceUsername());
-        Chat c = chatHashMap.get(m.getSourceUsername());
-        c.receive(m);
-        view.selectChat(c.getThey());
-      });
+      Platform.runLater(
+          () -> {
+            LOGGER.debug("Creating new chat for {}", m.getSourceUsername());
+            addChat(m.getSourceUsername());
+            Chat c = chatHashMap.get(m.getSourceUsername());
+            c.receive(m);
+            view.selectChat(c.getThey());
+          });
     }
-
   }
-
 
   @Override
   public void onRemove(RemoveEvent<String> event) {
@@ -110,21 +124,25 @@ public class ChatManager implements ModifiableListHandler<String> {
     Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
     alert.setTitle("Chat Deletion");
     alert.setHeaderText("Delete chat with " + they);
-    alert.setContentText("Are you sure you want to delete the chat with " + they + "\n "
-        + "Deletion cannot be undone and may cause loss of data");
+    alert.setContentText(
+        "Are you sure you want to delete the chat with "
+            + they
+            + "\n "
+            + "Deletion cannot be undone and may cause loss of data");
     Optional<ButtonType> out = alert.showAndWait();
-    out.ifPresent(buttonType -> {
-      if (buttonType.equals(ButtonType.OK)) {
-        view.getChatsList().getItems().remove(event.getSelectedIndex());
-        try {
-          IOUtils.deleteHistory(they);
-        } catch (IOException e) {
-          LOGGER.error("Error while deleting history for " + they, e);
-        }
-      } else {
-        // Noting
-      }
-    });
+    out.ifPresent(
+        buttonType -> {
+          if (buttonType.equals(ButtonType.OK)) {
+            view.getChatsList().getItems().remove(event.getSelectedIndex());
+            try {
+              IOUtils.deleteHistory(they);
+            } catch (IOException e) {
+              LOGGER.error("Error while deleting history for " + they, e);
+            }
+          } else {
+            // Noting
+          }
+        });
   }
 
   @Override
@@ -147,13 +165,12 @@ public class ChatManager implements ModifiableListHandler<String> {
             alert.setContentText("Cannot have two chats to the same addressee");
             alert.showAndWait();
           }
-
         });
   }
 
   public void stop() {
     theChatter.stop();
-    if(keyStore != null && !keyStore.isEmpty() ){
+    if (keyStore != null && !keyStore.isEmpty()) {
       try {
         IOUtils.saveKeystore(keyStore);
       } catch (IOException e) {
@@ -169,17 +186,37 @@ public class ChatManager implements ModifiableListHandler<String> {
 
   public void loadExisitngChats() {
     Path path = Paths.get(IOUtils.getDirectory());
-    Arrays.stream(Objects.requireNonNull(path.toFile().listFiles(
-        (dir, filename) -> filename.startsWith(IOUtils.HISTORY_PREFIX) && filename
-            .endsWith(IOUtils.HISTORY_EXTENSION)))).forEach(f -> {
-      try {
-        ChatHistory chatHistory = JSONUtils.readFromJSONFile(f, ChatHistory.class);
-        addChat(chatHistory);
-      } catch (IOException e) {
-        LOGGER.error("Error while loading existing chats.", e);
-      }
-    });
+    Arrays.stream(
+            Objects.requireNonNull(
+                path.toFile()
+                    .listFiles(
+                        (dir, filename) ->
+                            filename.startsWith(IOUtils.HISTORY_PREFIX)
+                                && filename.endsWith(IOUtils.HISTORY_EXTENSION))))
+        .forEach(
+            f -> {
+              try {
+                ChatHistory chatHistory = JSONUtils.readFromJSONFile(f, ChatHistory.class);
+                addChat(chatHistory);
+              } catch (IOException e) {
+                LOGGER.error("Error while loading existing chats.", e);
+              }
+            });
     view.getChatsList().getListView().getSelectionModel().select(0);
+  }
+
+  public void initBroadcast() throws IOException {
+    Path path = IOUtils.getBroadgast();
+    if (Files.exists(path)) {
+      ChatHistory chatHistory = JSONUtils.readFromJSONFile(path.toFile(), ChatHistory.class);
+      addChat(chatHistory);
+      LOGGER.debug("Loaded broadcast");
+    } else {
+      ChatHistory chatHistory = new ChatHistory(true);
+      chatHistory.setUser("BROADCAST");
+      addChat(chatHistory);
+      LOGGER.debug("Created braodcast");
+    }
   }
 
   private boolean addChat(String they) {
@@ -197,7 +234,10 @@ public class ChatManager implements ModifiableListHandler<String> {
 
   private void addChat(ChatHistory history) {
     if (!chatHashMap.containsKey(history.getUser())) {
-      chatHashMap.put(history.getUser(), new ChatView(history.getUser(), theChatter).getChat());
+      ChatView view = new ChatView(history.getUser(), theChatter);
+      Chat chat = view.getChat();
+      chat.setBroadcast();
+      chatHashMap.put(history.getUser(), chat);
     } else {
       // Not sure whether needed
       Chat chat = chatHashMap.get(history.getUser());
@@ -217,13 +257,16 @@ public class ChatManager implements ModifiableListHandler<String> {
   }
 
   public void connectToNode(String other) {
-    IPFSAdapter.getInstance().getCachedIPFS().ifPresent(ipfs -> {
-      try {
-        ipfs.swarm.connect(new MultiAddress(other));
-      } catch (IOException e) {
-        LOGGER.error("Couldn't connect to other.", e);
-      }
-    });
+    IPFSAdapter.getInstance()
+        .getCachedIPFS()
+        .ifPresent(
+            ipfs -> {
+              try {
+                ipfs.swarm.connect(new MultiAddress(other));
+              } catch (IOException e) {
+                LOGGER.error("Couldn't connect to other.", e);
+              }
+            });
   }
 
   @SuppressWarnings("unchecked")
@@ -237,7 +280,7 @@ public class ChatManager implements ModifiableListHandler<String> {
       } catch (IOException e) {
         LOGGER.error("Couldn't retrieve own id", e);
       }
-      return null;//ipfs.get().id();
+      return null; // ipfs.get().id();
     } else {
       return null;
     }
@@ -253,17 +296,16 @@ public class ChatManager implements ModifiableListHandler<String> {
       } catch (IOException e) {
         LOGGER.error("Couldn't retrieve own id", e);
       }
-      return null;//ipfs.get().id();
+      return null; // ipfs.get().id();
     } else {
       return null;
     }
   }
 
-
   public void addKeyLocationFor(String they, String keyLocation) {
     // TODO Check if entry exists
     keyStore.add(they, keyLocation);
     keyStore.getEntry(they).ifPresent(activeChat::setKeystoreEntry);
-    LOGGER.debug("Added {}/{} to the keystore",they,keyLocation);
+    LOGGER.debug("Added {}/{} to the keystore", they, keyLocation);
   }
 }

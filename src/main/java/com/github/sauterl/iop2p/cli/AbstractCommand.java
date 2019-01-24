@@ -18,16 +18,20 @@ public abstract class AbstractCommand implements Runnable {
    * absolute. Using go-ipfs, this is usually sumething like {@code path/to/go-ipfs/ipfs} or {@code
    * /usr/var/bin/ipfs} after installation.
    */
-  @Option(title = "IPFS Executable", name = {"-e",
-      "--ipfs"}, description = "The IPFS executable as a relative or absolute path")
+  @Option(
+      title = "IPFS Executable",
+      name = {"-e", "--ipfs"},
+      description = "The IPFS executable as a relative or absolute path")
   @Required
   private String ipfsExecutable;
   /**
    * The IPFS repository to use as an option. This is useful if someone wants to have mulitple chat
    * clients on the same machine.
    */
-  @Option(title = "IPFS repository", name = {"-d",
-      "--repo"}, description = "The IPFS repository to use")
+  @Option(
+      title = "IPFS repository",
+      name = {"-d", "--repo"},
+      description = "The IPFS repository to use")
   private String ipfsRepo = ".ipfs-repo";
 
   protected AbstractCommand() {
@@ -43,9 +47,7 @@ public abstract class AbstractCommand implements Runnable {
     return ipfsExecutable;
   }
 
-  /**
-   * Executes this command
-   */
+  /** Executes this command */
   @Override
   public void run() {
     execute();
@@ -55,8 +57,6 @@ public abstract class AbstractCommand implements Runnable {
     return ipfsRepo;
   }
 
-  /**
-   * The command's main. All logic goes into here.
-   */
+  /** The command's main. All logic goes into here. */
   public abstract void execute();
 }

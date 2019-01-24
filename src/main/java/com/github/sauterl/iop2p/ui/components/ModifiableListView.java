@@ -27,6 +27,7 @@ public class ModifiableListView<T> extends BorderPane {
   // TODO Allow custom styling
   protected ListView<T> listView = new ListView();
   private ArrayList<ModifiableListHandler<T>> handlers = new ArrayList<>();
+
   public ModifiableListView(String title) {
     super();
     initComponents(title, listView);
@@ -67,7 +68,6 @@ public class ModifiableListView<T> extends BorderPane {
     } else {
       handlers.forEach(handler -> handler.onAdd(addEvent));
     }
-
   }
 
   protected void setOnRemoveAction(ActionEvent event) {
@@ -106,9 +106,9 @@ public class ModifiableListView<T> extends BorderPane {
     Button buttonRemove = new Button("-");
     buttonRemove.setOnAction(this::setOnRemoveAction);
 
-        /*Font fontButton = Font.font("sans-serif", FontWeight.EXTRA_BOLD, 12);
-        buttonAdd.setFont(fontButton);
-        buttonRemove.setFont(fontButton);*/
+    /*Font fontButton = Font.font("sans-serif", FontWeight.EXTRA_BOLD, 12);
+    buttonAdd.setFont(fontButton);
+    buttonRemove.setFont(fontButton);*/
 
     buttons.getChildren().addAll(buttonAdd, buttonRemove);
 
@@ -123,13 +123,12 @@ public class ModifiableListView<T> extends BorderPane {
     // Content
     this.setTop(titleBar);
     this.setCenter(content);
-
   }
 
   public static class RemoveEvent<T> extends ActionEvent {
 
-    public static final EventType<RemoveEvent> REMOVE = new EventType<>(ActionEvent.ACTION,
-        "remove");
+    public static final EventType<RemoveEvent> REMOVE =
+        new EventType<>(ActionEvent.ACTION, "remove");
     private T selected;
     private int index;
 
@@ -153,9 +152,7 @@ public class ModifiableListView<T> extends BorderPane {
     }
   }
 
-  /**
-   * Rather a flag event
-   */
+  /** Rather a flag event */
   public static class AddEvent<T> extends ActionEvent {
 
     public static final EventType<AddEvent> ADD = new EventType<>(ActionEvent.ACTION, "add");
@@ -169,5 +166,4 @@ public class ModifiableListView<T> extends BorderPane {
       return ADD;
     }
   }
-
 }

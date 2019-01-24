@@ -26,15 +26,17 @@ public class P2PChatApplication extends Application {
 
     window.getManager().loadExisitngChats();
     window.getManager().loadAndInitSecurityModule();
+    window.getManager().initBroadcast();
 
     primaryStage
         .getIcons()
         .addAll(new Image(getClass().getClassLoader().getResourceAsStream("icon.png")));
 
     primaryStage.show();
-    primaryStage.setOnCloseRequest(event -> {
-      window.getManager().stop();
-    });
+    primaryStage.setOnCloseRequest(
+        event -> {
+          window.getManager().stop();
+        });
   }
 
   private void handleUncaughtException(Thread thread, Throwable throwable) {

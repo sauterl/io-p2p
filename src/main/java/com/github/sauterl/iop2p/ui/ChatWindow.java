@@ -81,28 +81,33 @@ public class ChatWindow extends VBox {
     connect.setOnAction(
         e -> {
           Dialog<UserCredentials> dialog = connectAlert(manager.getOwnAddresses());
-          String multiAddr = "/ip4/"
-              + dialog.getResult().getIp()
-              + "/tcp/"
-              + dialog.getResult().getPort()
-              + "/ipfs/"
-              + dialog.getResult().getId();
-    LOGGER.debug(multiAddr);
+          String multiAddr =
+              "/ip4/"
+                  + dialog.getResult().getIp()
+                  + "/tcp/"
+                  + dialog.getResult().getPort()
+                  + "/ipfs/"
+                  + dialog.getResult().getId();
+          LOGGER.debug(multiAddr);
           manager.connectToNode(multiAddr);
-
         });
 
+    addKeysMenuItem.setOnAction(
+        e -> {
+          Chat active =
+              ((ChatView)
+                      chatContainer.getChildren().stream()
+                          .filter(n -> n instanceof ChatView)
+                          .findFirst()
+                          .get())
+                  .getChat();
+          Dialog<String> dialog = createAndShowKeyLocationDialog(active.getThey());
+          if (dialog.getResult() != null && !dialog.getResult().isEmpty()) {
+            manager.addKeyLocationFor(active.getThey(), dialog.getResult());
+          }
+        });
 
-    addKeysMenuItem.setOnAction(e -> {
-      Chat active = ((ChatView)chatContainer.getChildren().stream().filter(n -> n instanceof ChatView).findFirst().get()).getChat();
-        Dialog<String> dialog = createAndShowKeyLocationDialog(active.getThey());
-        if(dialog.getResult() != null && !dialog.getResult().isEmpty()){
-          manager.addKeyLocationFor(active.getThey(), dialog.getResult());
-
-        }
-    });
-
-    menu.getItems().addAll(connect,addKeysMenuItem);
+    menu.getItems().addAll(connect, addKeysMenuItem);
   }
 
   void selectChat(String chat) {

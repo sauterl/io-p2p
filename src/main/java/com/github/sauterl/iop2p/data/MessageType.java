@@ -7,9 +7,9 @@ package com.github.sauterl.iop2p.data;
  * @author loris.sauter
  */
 public enum MessageType {
-
   PLAIN,
   ENCRYPTED,
   IMAGE,
-  FILE
+  FILE,
+  BROADCAST
 }

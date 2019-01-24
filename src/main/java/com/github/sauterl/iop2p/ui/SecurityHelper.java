@@ -5,6 +5,4 @@ package com.github.sauterl.iop2p.ui;
  *
  * @author loris.sauter
  */
-public class SecurityHelper {
-
-}
+public class SecurityHelper {}

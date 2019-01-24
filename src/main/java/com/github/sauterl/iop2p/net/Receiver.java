@@ -23,7 +23,6 @@ public class Receiver implements Runnable {
   private ObjectMapper om = new ObjectMapper();
   private BlockingQueue<Message> messages = new ArrayBlockingQueue<>(1000);
 
-
   public Receiver(String topic, Pubsub pubsub) {
     System.out.println("Receiving at " + topic);
     this.topic = topic;

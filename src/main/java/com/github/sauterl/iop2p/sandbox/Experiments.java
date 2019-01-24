@@ -7,8 +7,5 @@ package com.github.sauterl.iop2p.sandbox;
  */
 public class Experiments {
 
-  public static void main(String[] args){
-
-
-  }
+  public static void main(String[] args) {}
 }

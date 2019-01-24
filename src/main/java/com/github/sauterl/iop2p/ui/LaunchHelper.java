@@ -19,12 +19,14 @@ public class LaunchHelper<T extends Application> {
   }
 
   public synchronized void launch() {
-    fxLauncher = new Thread(() -> {
-      Thread.currentThread().setName("FXLauncher");
-      running = true;
-      Application.launch(launchClass);
-      running = false;
-    });
+    fxLauncher =
+        new Thread(
+            () -> {
+              Thread.currentThread().setName("FXLauncher");
+              running = true;
+              Application.launch(launchClass);
+              running = false;
+            });
     fxLauncher.start();
   }
 
@@ -35,6 +37,4 @@ public class LaunchHelper<T extends Application> {
   public void stop() {
     fxLauncher.interrupt();
   }
-
-
 }

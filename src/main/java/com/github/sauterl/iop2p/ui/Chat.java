@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Chat {
 
-  private final static Logger LOGGER = LoggerFactory.getLogger(Chat.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(Chat.class);
 
   private final String us;
   private final String they;
@@ -36,12 +36,13 @@ public class Chat {
 
   private boolean encrypted = false;
   private ChatView view;
+  private RsaProcessor security;
 
   public Chat(final String they, final Chatter chatter) {
     this.us = chatter.getUsername();
     this.they = they;
     this.chatter = chatter;
-    //chatter.setOnMessageReceived(this::receive);
+    // chatter.setOnMessageReceived(this::receive);
     try {
       load();
     } catch (IOException e) {
@@ -54,14 +55,13 @@ public class Chat {
     return keystoreEntry;
   }
 
-  private RsaProcessor security;
-
   public void setKeystoreEntry(Entry keystoreEntry) {
-    LOGGER.debug("Enabling security {}<->{}",us,they);
+    LOGGER.debug("Enabling security {}<->{}", us, they);
     this.keystoreEntry = keystoreEntry;
     encrypted = true;
     try {
-      security = new RsaProcessor(IOUtils.getOurKeyLocation().toString(),keystoreEntry.getKeyLocation());
+      security =
+          new RsaProcessor(IOUtils.getOurKeyLocation().toString(), keystoreEntry.getKeyLocation());
     } catch (IOException e) {
       LOGGER.error("Coudln't crate security", e);
     }
@@ -75,6 +75,10 @@ public class Chat {
     this.history = history;
     // TODO add check for 'they'
 
+  }
+
+  public void setBroadcast() {
+    history.setBroadcast(true);
   }
 
   public ChatView getView() {
@@ -95,21 +99,21 @@ public class Chat {
 
   public Message send(Message m) {
     LOGGER.debug("Security={}, sending: {}", encrypted, m);
-    if(encrypted){
+    if (encrypted) {
       return sendEndrypted(m);
-    }else{
+    } else {
       return sendMessage(m);
     }
   }
 
-  public Message sendEndrypted(Message m){
+  public Message sendEndrypted(Message m) {
     LOGGER.debug("Sending encrypted msg");
     try {
       EncryptedMessage encryptedMessage = security.encrypt(m);
       sendMessage(encryptedMessage);
       return encryptedMessage;
     } catch (InvalidCipherTextException e) {
-      LOGGER.error("Couldn't encrypt message. WILL NOT SEND IT",m);
+      LOGGER.error("Couldn't encrypt message. WILL NOT SEND IT", m);
     }
     return m;
   }
@@ -124,20 +128,21 @@ public class Chat {
     return m;
   }
 
-  public Optional<Message> decrypt(EncryptedMessage m){
+  public Optional<Message> decrypt(EncryptedMessage m) {
     try {
       return Optional.of(security.decrypt(m));
     } catch (InvalidCipherTextException e) {
-      LOGGER.error("Couldn't decrypt the message",e);
+      LOGGER.error("Couldn't decrypt the message", e);
       return Optional.empty();
     }
   }
 
   public void receive(Message m) {
     LOGGER.debug("Receiving message {}", m);
-    Platform.runLater(() -> {
-      view.getMessages().add(m);
-    });
+    Platform.runLater(
+        () -> {
+          view.getMessages().add(m);
+        });
   }
 
   public void load() throws IOException {
@@ -151,6 +156,16 @@ public class Chat {
 
   public void save() throws IOException {
     history.setLastSaved(System.currentTimeMillis());
-    IOUtils.saveHistory(history);
+    if (history.isBroadcast()) {
+      LOGGER.debug("Saving broadcast");
+      IOUtils.saveBroadcastHistory(history);
+    } else {
+      LOGGER.debug("Saving history");
+      IOUtils.saveHistory(history);
+    }
+  }
+
+  public boolean isBroadcaster() {
+    return history.isBroadcast();
   }
 }

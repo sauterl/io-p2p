@@ -20,12 +20,13 @@ import java.util.Base64;
 @Command(name = "key-gen", description = "Generate key-pair for usage with iop2p")
 public class KeyGen implements Runnable {
 
-
   public static final String PUBLIC_KEY = "public-key";
   public static final String PRIVATE_KEY = "private-key";
 
   @Required
-  @Option(name = {"-o", "--output"}, description = "Path to write the key files to")
+  @Option(
+      name = {"-o", "--output"},
+      description = "Path to write the key files to")
   private String outputPath;
 
   @Override
@@ -38,10 +39,12 @@ public class KeyGen implements Runnable {
 
       Base64.Encoder b64Enc = Base64.getEncoder();
 
-      String publicKeyFilename = Paths.get(outputPath, "/", PUBLIC_KEY).toFile()
-          .getAbsolutePath(); // TODO Extract constants
-      String privateKeyFilename = Paths.get(outputPath, "/", PRIVATE_KEY).toFile()
-          .getAbsolutePath();
+      String publicKeyFilename =
+          Paths.get(outputPath, "/", PUBLIC_KEY)
+              .toFile()
+              .getAbsolutePath(); // TODO Extract constants
+      String privateKeyFilename =
+          Paths.get(outputPath, "/", PRIVATE_KEY).toFile().getAbsolutePath();
 
       System.out.println("Pub: " + publicKeyFilename);
       System.out.println("Priv: " + privateKeyFilename);
@@ -65,5 +68,4 @@ public class KeyGen implements Runnable {
       // Ignore // TODO Proper exception handling!
     }
   }
-
 }

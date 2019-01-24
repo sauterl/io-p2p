@@ -9,7 +9,7 @@ import java.util.Optional;
 /**
  * Custom map-alike class for holding username/rsa-key-pair-location entries.
  *
- * This class is for serialization purposes and designed to work with fasterxml/jackson.
+ * <p>This class is for serialization purposes and designed to work with fasterxml/jackson.
  *
  * @author loris.sauter
  */
@@ -22,11 +22,9 @@ public class KeyStore {
     return keys;
   }
 
-
   public boolean add(String user, String keyLocation) {
     return keys.add(new Entry(user, keyLocation));
   }
-
 
   public Optional<String> get(String user) {
     Optional<Entry> canditates = keys.stream().filter(entry -> entry.user.equals(user)).findFirst();
@@ -50,16 +48,13 @@ public class KeyStore {
     return new ArrayList<>(keys);
   }
 
-  /**
-   * The actual entry which maps usernames and keystore location
-   */
+  /** The actual entry which maps usernames and keystore location */
   public static class Entry {
 
     private String user;
     private String keyLocation;
 
-    public Entry() {
-    }
+    public Entry() {}
 
     public Entry(String user, String keyLocation) {
       this.user = user;
@@ -82,5 +77,4 @@ public class KeyStore {
       this.keyLocation = keyLocation;
     }
   }
-
 }

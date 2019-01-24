@@ -13,7 +13,6 @@ import org.bouncycastle.crypto.InvalidCipherTextException;
 @Command(name = "sandbox", description = "Testing things out - quick and dirty")
 public class Testings implements Runnable {
 
-
   @Override
   public void run() {
     try {

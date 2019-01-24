@@ -19,9 +19,7 @@ import org.bouncycastle.crypto.util.PublicKeyFactory;
  */
 public class RSA {
 
-  private RSA() {
-
-  }
+  private RSA() {}
 
   public static AsymmetricKeyParameter loadKeyFromFile(String path, boolean pub)
       throws IOException {
@@ -70,10 +68,8 @@ public class RSA {
 
     Base64.Decoder dec = Base64.getDecoder();
 
-    byte[] encodedBytes = e
-        .processBlock(dec.decode(encryptedMsg), 0, dec.decode(encryptedMsg).length);
+    byte[] encodedBytes =
+        e.processBlock(dec.decode(encryptedMsg), 0, dec.decode(encryptedMsg).length);
     return new String(encodedBytes);
-
   }
-
 }

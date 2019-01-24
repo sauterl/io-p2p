@@ -16,12 +16,15 @@ public class ChatHistory {
   private String user;
   private long lastSaved;
   private List<Message> messages = new ArrayList<>();
+  private boolean broadcast;
 
-  public ChatHistory() {
+  public ChatHistory() {}
+
+  public ChatHistory(boolean broadcast) {
+    this.broadcast = broadcast;
   }
 
-  public ChatHistory(String user, long lastSaved,
-      List<Message> messages) {
+  public ChatHistory(String user, long lastSaved, List<Message> messages) {
     this.user = user;
     this.lastSaved = lastSaved;
     this.messages = messages;
@@ -55,4 +58,11 @@ public class ChatHistory {
     this.messages = messages;
   }
 
+  public boolean isBroadcast() {
+    return broadcast;
+  }
+
+  public void setBroadcast(boolean broadcast) {
+    this.broadcast = broadcast;
+  }
 }

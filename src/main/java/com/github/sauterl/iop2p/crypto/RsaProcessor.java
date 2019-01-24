@@ -9,10 +9,10 @@ import org.bouncycastle.crypto.params.AsymmetricKeyParameter;
 /**
  * RSA based en- and decryption of messages.
  *
- * Requires 'our' private key to encrypt the message and 'their' public key.
+ * <p>Requires 'our' private key to encrypt the message and 'their' public key.
  *
- * There is the requirement that public keys are stored at the specified location as textfield with
- * the name 'public-key', Private key as 'private-key'
+ * <p>There is the requirement that public keys are stored at the specified location as textfield
+ * with the name 'public-key', Private key as 'private-key'
  *
  * @author loris.sauter
  */
@@ -37,5 +37,4 @@ public class RsaProcessor {
     m.setPayload(RSA.decrypt(ourKey, enc.getPayload()));
     return m;
   }
-
 }
