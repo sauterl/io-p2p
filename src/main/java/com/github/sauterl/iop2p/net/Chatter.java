@@ -100,4 +100,8 @@ public class Chatter {
   public String getUsername() {
     return username;
   }
+
+  public void sendBroadcast(Message m) throws Exception {
+    sender.sendBroadcast(m);
+  }
 }

@@ -27,7 +27,7 @@ public class RsaProcessor {
   }
 
   public EncryptedMessage encrypt(Message m) throws InvalidCipherTextException {
-    EncryptedMessage enc = new EncryptedMessage();
+    EncryptedMessage enc = new EncryptedMessage(m);
     enc.setPayload(RSA.encrypt(theirKey, m.getPayload()));
     return enc;
   }

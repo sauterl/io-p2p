@@ -120,7 +120,11 @@ public class Chat {
 
   private Message sendMessage(Message m) {
     try {
-      chatter.send(m);
+      if(history.isBroadcast()){
+        chatter.sendBroadcast(m);
+      }else{
+        chatter.send(m);
+      }
       LOGGER.debug("Successfully send message {}", m);
     } catch (Exception e) {
       LOGGER.error("An error occurred during send.", e);

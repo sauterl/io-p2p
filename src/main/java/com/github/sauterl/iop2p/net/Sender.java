@@ -4,8 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.sauterl.iop2p.Utils;
 import com.github.sauterl.iop2p.data.Message;
 import io.ipfs.api.IPFS.Pubsub;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class Sender {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(Sender.class);
 
   private ObjectMapper om = new ObjectMapper();
   private Pubsub pubsub;
@@ -15,12 +19,14 @@ public class Sender {
   }
 
   public void send(Message message) throws Exception {
-    pubsub.pub(
+    Object o = pubsub.pub(
         Utils.getUsernameInboxTopic(message.getTargetUsername()), om.writeValueAsString(message));
+    LOGGER.debug("Sent: {}",o);
   }
 
   // send broadcast
   public void sendBroadcast(Message message) throws Exception {
-    pubsub.pub(Utils.getInboxTopicBroadcast(), om.writeValueAsString(message));
+    Object o =  pubsub.pub(Utils.getInboxTopicBroadcast(), om.writeValueAsString(message));
+    LOGGER.debug("SentBroadcast: {}",o);
   }
 }

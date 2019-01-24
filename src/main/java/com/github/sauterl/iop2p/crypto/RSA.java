@@ -1,6 +1,7 @@
 package com.github.sauterl.iop2p.crypto;
 
 import com.github.sauterl.iop2p.Utils;
+import io.ipfs.multibase.Base58;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.security.Security;
@@ -50,6 +51,7 @@ public class RSA {
     AsymmetricBlockCipher e = new RSAEngine();
     e = new org.bouncycastle.crypto.encodings.PKCS1Encoding(e);
     e.init(true, publicKey);
+
 
     Base64.Encoder enc = Base64.getEncoder();
     byte[] encodedBytes = e.processBlock(decrypted.getBytes(), 0, decrypted.getBytes().length);

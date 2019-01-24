@@ -25,7 +25,20 @@ public class EncryptedMessage extends Message {
   }
 
   @Override
+  public void setPayload(String payload) {
+    payload = payload.replace("+", "@");
+    super.setPayload(payload);
+  }
+
+  @Override
+  public String getPayload() {
+    return super.getPayload().replace("@", "+");
+  }
+
+  @Override
   public MessageType getType() {
     return MessageType.ENCRYPTED;
   }
+
+
 }
