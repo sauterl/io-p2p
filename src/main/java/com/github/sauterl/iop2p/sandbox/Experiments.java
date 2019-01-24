@@ -1,5 +1,6 @@
 package com.github.sauterl.iop2p.sandbox;
 
+import com.github.sauterl.iop2p.data.FileMessage;
 import com.github.sauterl.iop2p.ipfs.FileExchange;
 import com.github.sauterl.iop2p.ipfs.IPFSAdapter;
 import java.io.File;
@@ -17,7 +18,9 @@ public class Experiments {
     IPFSAdapter adapter = IPFSAdapter.create("C:/Users/Loris/uni/11_hs18/internet-overloards/go-ipfs/ipfs.exe", "ipfs-repo");
     FileExchange exhange = new FileExchange(adapter.ipfs());
     try {
-      exhange.publishFile(new File("helloworld.txt"));
+      FileMessage m = exhange.publishFile(new File("helloworld.txt"));
+      File f = exhange.loadPublishedFile(m);
+      System.out.println(f);
     } catch (IOException e) {
       e.printStackTrace();
     }
