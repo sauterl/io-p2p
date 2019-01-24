@@ -23,6 +23,8 @@ public class Receiver implements Runnable {
   private ObjectMapper om = new ObjectMapper();
   private BlockingQueue<Message> messages = new ArrayBlockingQueue<>(1000);
 
+  private volatile boolean running = false;
+
 
   public Receiver(String topic, Pubsub pubsub) {
     System.out.println("Receiving at " + topic);
@@ -32,6 +34,7 @@ public class Receiver implements Runnable {
 
   @Override
   public void run() {
+    running = true;
     try {
       pubsub
           .sub(topic)
@@ -52,9 +55,19 @@ public class Receiver implements Runnable {
                   LOGGER.warn("Ignoring exception during receiving.", e);
                 }
               });
-    } catch (Exception e) {
-      e.printStackTrace();
+    } catch(InterruptedException ie) {
+      if(!running){
+        // Everything is fine
+      }else{
+        LOGGER.error("Was unexpectetly interrupted. Will die now", ie);
+      }
+    }catch (Exception e) {
+      LOGGER.error("An error occurred",e);
     }
+  }
+
+  public void stop(){
+    running = false;
   }
 
   private String parseRaw(String data) throws Base64DecodingException {
