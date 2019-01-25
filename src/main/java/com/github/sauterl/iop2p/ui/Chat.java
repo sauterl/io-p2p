@@ -74,6 +74,7 @@ public class Chat {
   public void setHistory(ChatHistory history) {
     this.history = history;
     // TODO add check for 'they'
+    view.getMessages().setAll(history.getMessages());
 
   }
 

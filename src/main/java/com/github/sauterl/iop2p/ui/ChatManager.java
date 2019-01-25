@@ -240,11 +240,15 @@ public class ChatManager implements ModifiableListHandler<String> {
       Chat chat = view.getChat();
       if(history.isBroadcast()){
         chat.setBroadcast();
+        chat.setHistory(history);
       }
       chatHashMap.put(history.getUser(), chat);
     } else {
       // Not sure whether needed
       Chat chat = chatHashMap.get(history.getUser());
+      if(history.isBroadcast()){
+        chat.setBroadcast();
+      }
       chat.setHistory(history);
     }
     view.getChatsList().getItems().add(history.getUser());
@@ -257,6 +261,7 @@ public class ChatManager implements ModifiableListHandler<String> {
       view.setActiveChat(activeChat);
       chatHashMap.values().forEach(c -> c.getView().setActive(false));
       activeChat.getView().setActive(true);
+      view.layout();
     }
   }
 

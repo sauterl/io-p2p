@@ -15,7 +15,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.geometry.NodeOrientation;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
@@ -111,9 +110,10 @@ public class ChatView extends VBox {
   private void layoutComponents() {
     scrollPane = new ScrollPane();
     scrollPane.setVbarPolicy(ScrollBarPolicy.AS_NEEDED);
-    scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
+    //scrollPane.setHbarPolicy(ScrollBarPolicy.AS_NEEDED);
     scrollPane.setContent(messagesBox);
     scrollPane.setFitToWidth(true);
+    scrollPane.setFitToHeight(false);
 
     HBox inputContainer = new HBox();
     inputContainer.getChildren().addAll(inputTextfield, sendBtn);
@@ -321,9 +321,9 @@ public class ChatView extends VBox {
     //Label msgLbl = new Label(message.getPayload() + (enc ? "enc" : ""));
     //VBox msgLbl = new MDFXNode(message.getPayload());
     TextFlow msgLbl = markdown.getTextflow();
-    if(self){
+    /*if(self){
       msgLbl.setNodeOrientation(NodeOrientation.RIGHT_TO_LEFT);
-    }
+    }*/
     // msgLbl.setAlignment(self ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
     msgLbl.setPadding(new Insets(2.5, self ? 5 : 10, 10, self ? 10 : 5));
     msgLbl.setBackground(
@@ -342,27 +342,30 @@ public class ChatView extends VBox {
     // msgLbl.shapeProperty().set(bubble);
 
     HBox container = new HBox(msgLbl);
-    // container.setStyle("-fx-background-color: red;-fx-border-color: black;");//DEBUG
+    container.setStyle("-fx-background-color: red;-fx-border-color: black;");//DEBUG
     container.setAlignment(self ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
     container.maxWidthProperty().bind(wrapper.widthProperty().multiply(.75));
 
     wrapper.setAlignment(self ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
 
-    // wrapper.setStyle("-fx-background-color: green;-fx-border-color: black;");
+    wrapper.setStyle("-fx-background-color: green;-fx-border-color: black;");
 
-    VBox dateMessage = new VBox();
-    dateMessage.getChildren().addAll(container, dateLbl);
+    VBox dateAndMsgBox = new VBox();
+    dateAndMsgBox.getChildren().addAll(container, dateLbl);
     if (message instanceof BroadcastMessage) {
-      dateMessage.getChildren().add(new Label(message.getSourceUsername()));
+      dateAndMsgBox.getChildren().add(new Label(message.getSourceUsername()));
     }
-    dateMessage.setAlignment(self ? Pos.TOP_RIGHT : Pos.TOP_LEFT);
+    dateAndMsgBox.setAlignment(self ? Pos.TOP_RIGHT : Pos.TOP_LEFT);
+    dateAndMsgBox.setStyle("-fx-background-color: blue;-fx-border-color: black;");
 
-    // dateMessage.setStyle("-fx-background-color: blue;-fx-border-color: black;");
 
-    wrapper.getChildren().setAll(dateMessage);
+    wrapper.getChildren().setAll(dateAndMsgBox);
     wrapper.setPadding(new Insets(5));
+
     return wrapper;
   }
+
+
 
   public void clear() {
     messages.clear();
