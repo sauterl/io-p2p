@@ -2,6 +2,7 @@ package com.github.sauterl.iop2p.ui;
 
 import static com.github.sauterl.iop2p.Utils.connectAlert;
 import static com.github.sauterl.iop2p.Utils.createAndShowKeyLocationDialog;
+import static com.github.sauterl.iop2p.Utils.sendFileMessageAlert;
 
 import com.github.sauterl.iop2p.Utils.UserCredentials;
 import com.github.sauterl.iop2p.ui.components.ModifiableListView;
@@ -12,6 +13,7 @@ import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SplitPane;
 import javafx.scene.layout.VBox;
+import javafx.stage.FileChooser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -117,6 +119,7 @@ public class ChatWindow extends VBox {
 
     fileTransfer.setOnAction(
         e -> {
+          FileChooser fileChooser = sendFileMessageAlert();
 
         });
 
