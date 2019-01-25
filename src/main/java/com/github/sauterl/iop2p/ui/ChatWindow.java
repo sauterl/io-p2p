@@ -111,7 +111,6 @@ public class ChatWindow extends VBox {
           }
         });
 
-    menu.getItems().addAll(connect, addKeysMenuItem);
 
 
     MenuItem fileTransfer = new MenuItem("File Transfer");
@@ -121,8 +120,8 @@ public class ChatWindow extends VBox {
 
         });
 
-    menu.getItems().addAll(connect, fileTransfer);
-    
+    menu.getItems().addAll(connect, addKeysMenuItem, fileTransfer);
+
   }
 
   void selectChat(String chat) {

@@ -5,6 +5,7 @@ import com.github.sauterl.iop2p.JSONUtils;
 import com.github.sauterl.iop2p.crypto.KeyStore;
 import com.github.sauterl.iop2p.data.ChatHistory;
 import com.github.sauterl.iop2p.data.Message;
+import com.github.sauterl.iop2p.ipfs.FileExchange;
 import com.github.sauterl.iop2p.ipfs.IPFSAdapter;
 import com.github.sauterl.iop2p.net.Chatter;
 import com.github.sauterl.iop2p.ui.components.ModifiableListHandler;
@@ -50,6 +51,13 @@ public class ChatManager implements ModifiableListHandler<String> {
 
   private Chat activeChat;
 
+  private FileExchange fileExchange;
+
+  public FileExchange getFileExchange() {
+    return fileExchange;
+  }
+
+
   public ChatManager(ChatWindow chatWindow) {
     view = chatWindow;
     theChatter =
@@ -68,6 +76,9 @@ public class ChatManager implements ModifiableListHandler<String> {
     broadcastChatter.setOnMessageReceived(this::handleIncomingMessage);
     LOGGER.info("Our ID: {}", getOwnNodeId());
     LOGGER.debug("Addresses: {}", Arrays.toString(getOwnAddresses()));
+    if(IPFSAdapter.getInstance().getCachedIPFS().isPresent()){
+      fileExchange = new FileExchange(IPFSAdapter.getInstance().getCachedIPFS().get());
+    }
   }
 
   public void loadAndInitSecurityModule() {
@@ -261,7 +272,6 @@ public class ChatManager implements ModifiableListHandler<String> {
       view.setActiveChat(activeChat);
       chatHashMap.values().forEach(c -> c.getView().setActive(false));
       activeChat.getView().setActive(true);
-      view.layout();
     }
   }
 

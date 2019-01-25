@@ -33,6 +33,7 @@ public class P2PChatApplication extends Application {
         .addAll(new Image(getClass().getClassLoader().getResourceAsStream("icon.png")));
 
     primaryStage.show();
+    window.layout();
     primaryStage.setOnCloseRequest(
         event -> {
           window.getManager().stop();
