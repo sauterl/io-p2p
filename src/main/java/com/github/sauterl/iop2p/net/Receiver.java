@@ -4,10 +4,9 @@ import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.sauterl.iop2p.data.Message;
-import com.sun.org.apache.xml.internal.security.exceptions.Base64DecodingException;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
 import io.ipfs.api.IPFS.Pubsub;
 import java.io.IOException;
+import java.util.Base64;
 import java.util.Optional;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
@@ -51,27 +50,28 @@ public class Receiver implements Runnable {
                   } else {
                     LOGGER.warn("Received non-valid message: {}", rawMsg);
                   }
-                } catch (Base64DecodingException | IOException e) {
+                } catch (IOException e) {
                   LOGGER.warn("Ignoring exception during receiving.", e);
                 }
               });
-    } catch(InterruptedException ie) {
-      if(!running){
+    } catch (InterruptedException ie) {
+      if (!running) {
         // Everything is fine
-      }else{
+      } else {
         LOGGER.error("Was unexpectetly interrupted. Will die now", ie);
       }
-    }catch (Exception e) {
-      LOGGER.error("An error occurred",e);
+    } catch (Exception e) {
+      LOGGER.error("An error occurred", e);
     }
   }
 
-  public void stop(){
+  public void stop() {
     running = false;
   }
 
-  private String parseRaw(String data) throws Base64DecodingException {
-    return new String(Base64.decode(data));
+  private String parseRaw(String data) {
+    Base64.Decoder dec = Base64.getDecoder();
+    return new String(dec.decode(data));
   }
 
   private Optional<Message> parse(String msg) throws IOException {
@@ -84,6 +84,14 @@ public class Receiver implements Runnable {
   }
 
   public Message getNextMessage() throws InterruptedException {
-    return messages.take();
+    try {
+      return messages.take();
+    } catch (InterruptedException e) {
+      if (running) {
+        throw new RuntimeException("Unexpected InterruptedException", e);
+      } else {
+        return null;
+      }
+    }
   }
 }

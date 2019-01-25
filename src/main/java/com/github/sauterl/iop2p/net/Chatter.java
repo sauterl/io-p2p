@@ -24,6 +24,8 @@ public class Chatter {
 
   private Consumer<Message> newMessageConsumer = null;
 
+  private volatile boolean running = false;
+
   public Chatter(String username, Pubsub pubsub, boolean broadcaster) {
     this.username = username;
     if (broadcaster) {
@@ -37,12 +39,22 @@ public class Chatter {
     msgHandlerThread =
         new Thread(
             () -> {
+              running = true;
               LOGGER.debug("MessageHandlerThread running...");
               while (true) {
                 if (hasNewMessageConsumer()) {
                   try {
                     LOGGER.debug("Waiting for message");
                     Message m = getNextMessage();
+                    if(m == null){
+                      if(running){
+                        LOGGER.error("Unexpected null message");
+                        continue;
+                      }else{
+                        LOGGER.debug("Last null message. stopping now");
+                        break;
+                      }
+                    }
                     LOGGER.debug("Msg: {}", m);
                     if (!broadcaster || !m.getSourceUsername().equals(username)) {
                       newMessageConsumer.accept(m);
@@ -74,6 +86,8 @@ public class Chatter {
   }
 
   public void stop() {
+    running = false;
+    receiver.stop();
     receiverThred.interrupt();
     msgHandlerThread.interrupt();
   }

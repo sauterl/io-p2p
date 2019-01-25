@@ -105,6 +105,9 @@ public class ChatManager implements ModifiableListHandler<String> {
 
   private void handleIncomingMessage(Message m) {
     LOGGER.debug("Incoming message: {}", m);
+    if(m == null){
+      return;
+    }
     if(m.getType() == MessageType.FILE){
       FileMessage msg = new FileMessage(m);
       try {
@@ -195,6 +198,7 @@ public class ChatManager implements ModifiableListHandler<String> {
 
   public void stop() {
     theChatter.stop();
+    broadcastChatter.stop();
     if (keyStore != null && !keyStore.isEmpty()) {
       try {
         IOUtils.saveKeystore(keyStore);
