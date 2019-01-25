@@ -1,5 +1,6 @@
 package com.github.sauterl.iop2p;
 
+import com.github.sauterl.iop2p.data.FileMessage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -77,6 +78,24 @@ public class Utils {
     svgPath.setContent(
         "m 104.34378,62.016026 -2.18752,-16.748167 c 2.76999,0 4.99999,-2.229996 4.99999,-4.99999 V 17.194931 c 0,-2.769995 -2.23,-4.99999 -4.99999,-4.99999 H 26.166656 c -2.77,0 -4.99999,2.229995 -4.99999,4.99999 v 23.072938 c 0,2.769994 2.22999,4.99999 4.99999,4.99999 h 69.319578 z");
     return svgPath;
+  }
+
+  public static Dialog<FileMessage> sendFileMessageAlert() {
+    Dialog<FileMessage> fileMessageDialog = new Dialog<>();
+    fileMessageDialog.setTitle("peer-text-peer");
+    fileMessageDialog.setHeaderText("Send a File:");
+    // send and cancel buttons
+    ButtonType sendButtonType = new ButtonType("Send", ButtonData.OK_DONE);
+    fileMessageDialog.getDialogPane().getButtonTypes().addAll(sendButtonType, ButtonType.CANCEL);
+
+    TextField file = new TextField();
+    file.setPromptText("Enter your file here");
+    Node sendButton = fileMessageDialog.getDialogPane().lookupButton(sendButtonType);
+
+   // fileMessageDialog.setResultConverter();
+    fileMessageDialog.showAndWait();
+
+    return fileMessageDialog;
   }
 
   public static Dialog<UserCredentials> connectAlert(String[] addresses) {
