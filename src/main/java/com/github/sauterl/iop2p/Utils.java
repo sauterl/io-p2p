@@ -1,6 +1,5 @@
 package com.github.sauterl.iop2p;
 
-import com.github.sauterl.iop2p.data.FileMessage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -24,6 +23,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
+import javafx.stage.FileChooser;
 
 /**
  * TODO: write JavaDoc
@@ -80,22 +80,13 @@ public class Utils {
     return svgPath;
   }
 
-  public static Dialog<FileMessage> sendFileMessageAlert() {
-    Dialog<FileMessage> fileMessageDialog = new Dialog<>();
-    fileMessageDialog.setTitle("peer-text-peer");
-    fileMessageDialog.setHeaderText("Send a File:");
-    // send and cancel buttons
-    ButtonType sendButtonType = new ButtonType("Send", ButtonData.OK_DONE);
-    fileMessageDialog.getDialogPane().getButtonTypes().addAll(sendButtonType, ButtonType.CANCEL);
+  public static FileChooser sendFileMessageAlert() {
 
-    TextField file = new TextField();
-    file.setPromptText("Enter your file here");
-    Node sendButton = fileMessageDialog.getDialogPane().lookupButton(sendButtonType);
+    FileChooser fileChooser = new FileChooser();
+    fileChooser.setTitle("Open Resource File");
+    fileChooser.showOpenDialog(null);
 
-   // fileMessageDialog.setResultConverter();
-    fileMessageDialog.showAndWait();
-
-    return fileMessageDialog;
+    return fileChooser;
   }
 
   public static Dialog<UserCredentials> connectAlert(String[] addresses) {
