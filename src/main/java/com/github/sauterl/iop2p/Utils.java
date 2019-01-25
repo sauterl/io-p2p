@@ -23,7 +23,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.SVGPath;
 import javafx.scene.shape.Shape;
-import javafx.stage.FileChooser;
 
 /**
  * TODO: write JavaDoc
@@ -78,15 +77,6 @@ public class Utils {
     svgPath.setContent(
         "m 104.34378,62.016026 -2.18752,-16.748167 c 2.76999,0 4.99999,-2.229996 4.99999,-4.99999 V 17.194931 c 0,-2.769995 -2.23,-4.99999 -4.99999,-4.99999 H 26.166656 c -2.77,0 -4.99999,2.229995 -4.99999,4.99999 v 23.072938 c 0,2.769994 2.22999,4.99999 4.99999,4.99999 h 69.319578 z");
     return svgPath;
-  }
-
-  public static FileChooser sendFileMessageAlert() {
-
-    FileChooser fileChooser = new FileChooser();
-    fileChooser.setTitle("Open Resource File");
-    fileChooser.showOpenDialog(null);
-
-    return fileChooser;
   }
 
   public static Dialog<UserCredentials> connectAlert(String[] addresses) {

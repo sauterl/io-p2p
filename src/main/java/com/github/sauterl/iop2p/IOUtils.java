@@ -9,7 +9,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.security.provider.SHA;
 
 public class IOUtils {
 
@@ -100,5 +99,13 @@ public class IOUtils {
 
   public static Path getOurKeyLocation() {
     return Paths.get(getDirectory(), "my-keys/");
+  }
+
+  public static String getFilenameReceived(String filename) {
+    return getDownloadDir().resolve(filename).toString();
+  }
+
+  public static String getFilenameSent(String filename){
+    return getPublishDir().resolve(filename).toString();
   }
 }

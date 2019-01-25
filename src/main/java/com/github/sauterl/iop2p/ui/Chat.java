@@ -7,6 +7,7 @@ import com.github.sauterl.iop2p.crypto.RsaProcessor;
 import com.github.sauterl.iop2p.data.ChatHistory;
 import com.github.sauterl.iop2p.data.EncryptedMessage;
 import com.github.sauterl.iop2p.data.Message;
+import com.github.sauterl.iop2p.data.MessageType;
 import com.github.sauterl.iop2p.net.Chatter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -74,7 +75,7 @@ public class Chat {
   public void setHistory(ChatHistory history) {
     this.history = history;
     // TODO add check for 'they'
-    view.getMessages().setAll(history.getMessages());
+    view.initMessageHandling();
 
   }
 
@@ -100,6 +101,9 @@ public class Chat {
 
   public Message send(Message m) {
     LOGGER.debug("Security={}, sending: {}", encrypted, m);
+    if(m.getType() == MessageType.FILE){
+      return sendMessage(m);
+    }
     if (encrypted) {
       return sendEndrypted(m);
     } else {
@@ -146,6 +150,7 @@ public class Chat {
     LOGGER.debug("Receiving message {}", m);
     Platform.runLater(
         () -> {
+
           view.getMessages().add(m);
         });
   }

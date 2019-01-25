@@ -4,7 +4,9 @@ import com.github.sauterl.iop2p.IOUtils;
 import com.github.sauterl.iop2p.JSONUtils;
 import com.github.sauterl.iop2p.crypto.KeyStore;
 import com.github.sauterl.iop2p.data.ChatHistory;
+import com.github.sauterl.iop2p.data.FileMessage;
 import com.github.sauterl.iop2p.data.Message;
+import com.github.sauterl.iop2p.data.MessageType;
 import com.github.sauterl.iop2p.ipfs.FileExchange;
 import com.github.sauterl.iop2p.ipfs.IPFSAdapter;
 import com.github.sauterl.iop2p.net.Chatter;
@@ -13,6 +15,7 @@ import com.github.sauterl.iop2p.ui.components.ModifiableListView.AddEvent;
 import com.github.sauterl.iop2p.ui.components.ModifiableListView.RemoveEvent;
 import io.ipfs.api.IPFS;
 import io.ipfs.multiaddr.MultiAddress;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -102,6 +105,15 @@ public class ChatManager implements ModifiableListHandler<String> {
 
   private void handleIncomingMessage(Message m) {
     LOGGER.debug("Incoming message: {}", m);
+    if(m.getType() == MessageType.FILE){
+      FileMessage msg = new FileMessage(m);
+      try {
+        File f = fileExchange.loadPublishedFile(msg);
+        LOGGER.info("Downloaded file successfully {}", f);
+      } catch (IOException e) {
+        LOGGER.error("Couldn download file",e);
+      }
+    }
     if (!m.getTargetUsername().equals(theChatter.getUsername())) {
       // ignoring those chats not for us
       return;
@@ -326,5 +338,17 @@ public class ChatManager implements ModifiableListHandler<String> {
     keyStore.add(they, keyLocation);
     keyStore.getEntry(they).ifPresent(activeChat::setKeystoreEntry);
     LOGGER.debug("Added {}/{} to the keystore", they, keyLocation);
+  }
+
+  public void sendFile(File f) {
+    try {
+      FileMessage m = fileExchange.publishFile(f);
+      m.setSourceUsername(activeChat.getUs());
+      m.setTargetUsername(activeChat.getThey());
+      activeChat.send(m);
+      activeChat.getView().getMessages().add(m);
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 }

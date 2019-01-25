@@ -2,10 +2,10 @@ package com.github.sauterl.iop2p.ui;
 
 import static com.github.sauterl.iop2p.Utils.connectAlert;
 import static com.github.sauterl.iop2p.Utils.createAndShowKeyLocationDialog;
-import static com.github.sauterl.iop2p.Utils.sendFileMessageAlert;
 
 import com.github.sauterl.iop2p.Utils.UserCredentials;
 import com.github.sauterl.iop2p.ui.components.ModifiableListView;
+import java.io.File;
 import javafx.geometry.Orientation;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Menu;
@@ -119,8 +119,12 @@ public class ChatWindow extends VBox {
 
     fileTransfer.setOnAction(
         e -> {
-          FileChooser fileChooser = sendFileMessageAlert();
-
+          FileChooser fileChooser = new FileChooser();
+          fileChooser.setTitle("Open Resource File");
+          File f  = fileChooser.showOpenDialog(null);
+          if(f != null){
+            manager.sendFile(f);
+          }
         });
 
     menu.getItems().addAll(connect, addKeysMenuItem, fileTransfer);

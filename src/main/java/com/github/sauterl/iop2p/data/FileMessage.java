@@ -3,7 +3,6 @@ package com.github.sauterl.iop2p.data;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.ipfs.multihash.Multihash;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
@@ -45,8 +44,10 @@ public class FileMessage extends Message {
         PublishedFile f = PublishedFile.fromJson(m.getPayload());
         setFilename(f.getFilename());
         setHash(f.getHash());
+        setSourceUsername(m.getSourceUsername());
+        setTargetUsername(m.getTargetUsername());
       } catch (IOException e) {
-        throw new RuntimeException("Coudln't parse payload. Is this really a filemessage?: "+m);
+        throw new RuntimeException("Coudln't parse payload. Is this really a filemessage?: "+m, e);
       }
     }else{
       throw new IllegalArgumentException("Cannot create FileMessage from non FILE message: "+m);
@@ -91,6 +92,9 @@ public class FileMessage extends Message {
   private static class PublishedFile{
     private String filename;
     private String hash;
+
+    public PublishedFile() {
+    }
 
     public PublishedFile(String filename, String hash) {
       this.filename = filename;

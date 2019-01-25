@@ -1,8 +1,10 @@
 package com.github.sauterl.iop2p.ui;
 
+import com.github.sauterl.iop2p.IOUtils;
 import com.github.sauterl.iop2p.Utils;
 import com.github.sauterl.iop2p.data.BroadcastMessage;
 import com.github.sauterl.iop2p.data.EncryptedMessage;
+import com.github.sauterl.iop2p.data.FileMessage;
 import com.github.sauterl.iop2p.data.Message;
 import com.github.sauterl.iop2p.data.MessageType;
 import com.github.sauterl.iop2p.net.Chatter;
@@ -85,7 +87,7 @@ public class ChatView extends VBox {
         });
   }
 
-  private void initMessageHandling() {
+  void initMessageHandling() {
     messages = FXCollections.observableList(chat.getHistory().getMessages());
     messages.addListener(
         (ListChangeListener<? super Message>)
@@ -151,7 +153,25 @@ public class ChatView extends VBox {
     } else if (message.getType() == MessageType.BROADCAST) {
       BroadcastMessage msg = new BroadcastMessage(message);
       messagesBox.getChildren().add(createSpeechBubbleDisplayV3(msg, false));
+    }else if (message.getType() == MessageType.FILE){
+      FileMessage msg = new FileMessage(message);
+      messagesBox.getChildren().add(createFileDisplay(msg));
     }
+  }
+
+  private Node createFileDisplay(FileMessage msg){
+    VBox box = new VBox();
+    boolean self = msg.getSourceUsername().equals(chat.getUs());
+    box.setAlignment(self ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
+    Label info = new Label(String.format("You %s a file!", self ? "sent" : "received"));
+    TextField field = new TextField(self ? IOUtils.getFilenameSent(msg.getFilename()) : IOUtils.getFilenameReceived(msg.getFilename()));
+    field.setEditable(false);
+    String pattern = "dd MMM yy, HH:mm";
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
+    String time = simpleDateFormat.format(new Date(msg.getTimestamp()));
+    Label date =  new Label(time);
+    box.getChildren().addAll(info,field,date);
+    return box;
   }
 
   private Node createMessageDisplay(Message message) {
@@ -342,13 +362,13 @@ public class ChatView extends VBox {
      msgLbl.shapeProperty().set(bubble);
 
     HBox container = new HBox(msgLbl);
-    container.setStyle("-fx-background-color: red;-fx-border-color: black;");//DEBUG
+    //container.setStyle("-fx-background-color: red;-fx-border-color: black;");//DEBUG
     container.setAlignment(self ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
-    container.maxWidthProperty().bind(wrapper.widthProperty().multiply(.75));
+    //container.maxWidthProperty().bind(wrapper.widthProperty().multiply(.75));
 
     wrapper.setAlignment(self ? Pos.CENTER_RIGHT : Pos.CENTER_LEFT);
 
-    wrapper.setStyle("-fx-background-color: green;-fx-border-color: black;");
+    //wrapper.setStyle("-fx-background-color: green;-fx-border-color: black;");
 
     VBox dateAndMsgBox = new VBox();
     dateAndMsgBox.getChildren().addAll(container, dateLbl);
@@ -356,7 +376,7 @@ public class ChatView extends VBox {
       dateAndMsgBox.getChildren().add(new Label(message.getSourceUsername()));
     }
     dateAndMsgBox.setAlignment(self ? Pos.TOP_RIGHT : Pos.TOP_LEFT);
-    dateAndMsgBox.setStyle("-fx-background-color: blue;-fx-border-color: black;");
+    //dateAndMsgBox.setStyle("-fx-background-color: blue;-fx-border-color: black;");
 
 
     wrapper.getChildren().setAll(dateAndMsgBox);
