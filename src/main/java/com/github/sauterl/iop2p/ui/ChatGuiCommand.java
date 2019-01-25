@@ -13,10 +13,10 @@ import java.util.concurrent.ExecutionException;
  *
  * @author loris.sauter
  */
-@Command(name = "simplegui")
-public class SimpleGuiCommand extends AbstractCommand {
+@Command(name = "chat")
+public class ChatGuiCommand extends AbstractCommand {
 
-  private static SimpleGuiCommand instance = null;
+  private static ChatGuiCommand instance = null;
 
   @Option(
       title = "User name",
@@ -31,12 +31,12 @@ public class SimpleGuiCommand extends AbstractCommand {
 
   private IPFS ipfs;
 
-  public SimpleGuiCommand() {
+  public ChatGuiCommand() {
     super();
     instance = this;
   }
 
-  public static SimpleGuiCommand getInstance() {
+  public static ChatGuiCommand getInstance() {
     return instance;
   }
 
