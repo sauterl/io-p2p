@@ -339,7 +339,7 @@ public class ChatView extends VBox {
     Shape bubble = self ? Utils.createRightSpeechBubble() : Utils.createLeftSpeechBubble();
     // ((SVGPath) bubble).setContent(self ? "M10 0 L0 10 L0 0 Z":"M0 0 L10 0 L10 10 Z");
 
-    // msgLbl.shapeProperty().set(bubble);
+     msgLbl.shapeProperty().set(bubble);
 
     HBox container = new HBox(msgLbl);
     container.setStyle("-fx-background-color: red;-fx-border-color: black;");//DEBUG
